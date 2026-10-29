@@ -1,0 +1,78 @@
+name: Build and Sign Farhan Castle APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Prepare web app
+        run: |
+          mkdir -p www
+          cp index.html www/
+          npm init -y
+          npm install @capacitor/core@6 @capacitor/android@6
+          npm install --save-dev @capacitor/cli@6
+          npm install @bcyesil/capacitor-plugin-printer@0.0.5
+
+      - name: Configure Capacitor
+        run: |
+          npx cap init "Farhan Castle" com.yourname.farhancastle --web-dir www
+          npx cap add android
+          # افقی کردن صفحه
+          sed -i 's/<activity/<activity android:screenOrientation="landscape"/' android/app/src/main/AndroidManifest.xml
+          npx cap sync android
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Generate Standard Keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore my-release-key.jks \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias my-key-alias \
+            -storepass Kabab123! \
+            -keypass Kabab123! \
+            -dname "CN=FarhanCastle, OU=Dev, O=MyOrg, L=Tehran, S=Tehran, C=IR"
+
+      - name: Sign APK
+        run: |
+          BUILD_TOOLS_PATH=$(find $ANDROID_HOME/build-tools -name "apksigner" -type f | head -n 1)
+          
+          $BUILD_TOOLS_PATH sign --ks my-release-key.jks \
+            --ks-pass pass:Kabab123! \
+            --key-pass pass:Kabab123! \
+            --ks-key-alias my-key-alias \
+            --out android/app/build/outputs/apk/debug/app-release-signed.apk \
+            android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Farhan-Castle-Release
+          path: android/app/build/outputs/apk/debug/app-release-signed.apk
+          if-no-files-found: error
