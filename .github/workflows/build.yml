@@ -1,3 +1,4 @@
+
 name: Build and Sign Farhan Castle APK
 
 on:
@@ -28,11 +29,27 @@ jobs:
 
       - name: Prepare web app
         run: |
+          set -e
           mkdir -p www
+
+          # کپی فایل اصلی بازی و تصویر صفحه شروع
           cp index.html www/
-          # کپی کردن فایل‌های صوتی به پوشه www
-          cp win.mp3 www/ || true
-          cp lose.mp3 www/ || true
+          cp icon-only.png www/
+
+          # کپی تمام فایل‌های صوتی بازی
+          cp start.mp3 www/
+          cp win.mp3 www/
+          cp lose.mp3 www/
+
+          # بررسی وجود فایل‌ها پیش از ساخت APK
+          test -s www/index.html
+          test -s www/icon-only.png
+          test -s www/start.mp3
+          test -s www/win.mp3
+          test -s www/lose.mp3
+
+          echo "All game files copied successfully:"
+          ls -lh www/
 
           npm init -y
           npm install @capacitor/core@6 @capacitor/android@6
@@ -43,15 +60,14 @@ jobs:
           npx cap init "Farhan Castle" com.yourname.farhancastle --web-dir www
           npx cap add android
 
-          # 1. اجبار برنامه به حالت عمودی (Portrait)
+          # اجبار برنامه به حالت عمودی
           sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
 
-          # 2. اجازه دسترسی به منابع محلی (حل مشکل پخش صدا)
+          # تنظیم دسترسی منابع محلی
           sed -i 's/<application/<application android:usesCleartextTraffic="true"/' android/app/src/main/AndroidManifest.xml
 
           npx cap sync android
 
-      # ===== مراحل تولید آیکون =====
       - name: Install Capacitor Assets
         run: npm install --save-dev @capacitor/assets
 
@@ -60,7 +76,15 @@ jobs:
 
       - name: Sync Assets to Android
         run: npx cap sync android
-      # ==================================
+
+      - name: Verify packaged web files
+        run: |
+          set -e
+          test -s www/index.html
+          test -s www/icon-only.png
+          test -s www/start.mp3
+          test -s www/win.mp3
+          test -s www/lose.mp3
 
       - name: Build Debug APK
         run: |
@@ -74,17 +98,19 @@ jobs:
             -keystore my-release-key.jks \
             -keyalg RSA -keysize 2048 -validity 10000 \
             -alias my-key-alias \
-            -storepass Kabab123! \
-            -keypass Kabab123! \
+            -storepass 'Kabab123!' \
+            -keypass 'Kabab123!' \
             -dname "CN=FarhanCastle, OU=Dev, O=MyOrg, L=Tehran, S=Tehran, C=IR"
 
       - name: Sign APK
         run: |
-          BUILD_TOOLS_PATH=$(find $ANDROID_HOME/build-tools -name "apksigner" -type f | head -n 1)
+          set -e
+          BUILD_TOOLS_PATH=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)
 
-          $BUILD_TOOLS_PATH sign --ks my-release-key.jks \
-            --ks-pass pass:Kabab123! \
-            --key-pass pass:Kabab123! \
+          "$BUILD_TOOLS_PATH" sign \
+            --ks my-release-key.jks \
+            --ks-pass 'pass:Kabab123!' \
+            --key-pass 'pass:Kabab123!' \
             --ks-key-alias my-key-alias \
             --out android/app/build/outputs/apk/debug/app-release-signed.apk \
             android/app/build/outputs/apk/debug/app-debug.apk
