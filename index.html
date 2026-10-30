@@ -133,16 +133,13 @@
 
   const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
 
-  // ====== مدیریت صداها ======
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  // ====== مدیریت صداها (فقط فایل‌های صوتی برای برد و باخت) ======
   const customSounds = {
-      welcome: new Audio('welcome.mp3'),
       win: new Audio('win.mp3'),
-      lose: new Audio('lose.mp3'),
-      click: new Audio('click.mp3')
+      lose: new Audio('lose.mp3')
   };
-  customSounds.welcome.preload = 'auto'; customSounds.win.preload = 'auto';
-  customSounds.lose.preload = 'auto'; customSounds.click.preload = 'auto';
+  customSounds.win.preload = 'auto';
+  customSounds.lose.preload = 'auto';
   
   function playCustomSound(key) {
       const audio = customSounds[key];
@@ -155,6 +152,8 @@
       return false;
   }
 
+  // صدای پیش‌فرض برای لمس حباب‌ها (اگر صداهای کلیک را نداشتید)
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playDefaultSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const now = audioCtx.currentTime;
@@ -168,25 +167,6 @@
         osc.connect(gain); gain.connect(audioCtx.destination);
         osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.3); 
         gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); 
-    } else if (type === 'cheer') {
-        const bufferSize = audioCtx.sampleRate * 3;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
-        const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
-        const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1000; filter.Q.value = 1;
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.15, now + 0.5);
-        gain.gain.linearRampToValueAtTime(0.1, now + 2.5); gain.gain.linearRampToValueAtTime(0, now + 3);
-        noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-        noise.start(now);
-        const whistle = audioCtx.createOscillator(); const wGain = audioCtx.createGain();
-        whistle.connect(wGain); wGain.connect(audioCtx.destination);
-        whistle.type = 'sine'; whistle.frequency.setValueAtTime(2000, now);
-        whistle.frequency.linearRampToValueAtTime(2500, now + 0.5); whistle.frequency.linearRampToValueAtTime(1800, now + 1);
-        whistle.frequency.linearRampToValueAtTime(2200, now + 1.5); whistle.frequency.linearRampToValueAtTime(1500, now + 2.5);
-        wGain.gain.setValueAtTime(0, now); wGain.gain.linearRampToValueAtTime(0.1, now + 0.3); wGain.gain.linearRampToValueAtTime(0, now + 2.8);
-        whistle.start(now); whistle.stop(now + 3);
     }
   }
 
@@ -199,7 +179,6 @@
     }
   }
 
-  // ====== افکت کانفتی ۸ ثانیه‌ای از 3 نقطه ======
   function startConfettiBlast() {
     let count = 0;
     if (confettiInterval) clearInterval(confettiInterval);
@@ -211,7 +190,7 @@
             createOneConfetti(window.innerWidth * 0.75);
         }
         count++;
-        if (count >= 80) { // 8 ثانیه
+        if (count >= 80) {
             clearInterval(confettiInterval);
             confettiInterval = null;
         }
@@ -303,7 +282,7 @@
         
         if (isGood) {
             score += 10; scoreDisplay.innerText = 'امتیاز: ' + score; 
-            if (!playCustomSound('click')) playDefaultSound('good');
+            playDefaultSound('good');
         } else {
             lives--; updateLivesUI(); playDefaultSound('bad');
             if (lives <= 0) endGame(false);
@@ -351,7 +330,11 @@
     
     if (!isTimeUp) {
         document.getElementById('delay-lose').classList.add('active');
-        if (!playCustomSound('lose')) speak("دوباره تلاش کن قهرمان");
+        
+        // پخش صدای باخت (lose.mp3)
+        if (!playCustomSound('lose')) {
+            speak("دوباره تلاش کن قهرمان");
+        }
         
         setTimeout(() => {
             document.getElementById('delay-lose').classList.remove('active');
@@ -360,7 +343,12 @@
         }, 5000);
     } else {
         document.getElementById('delay-win').classList.add('active');
-        if (!playCustomSound('win')) playDefaultSound('cheer');
+        
+        // پخش صدای برد (win.mp3)
+        if (!playCustomSound('win')) {
+            // اگر فایل win.mp3 نبود، از این صدا استفاده کن
+            speak("آفرین قهرمان");
+        }
         
         startConfettiBlast();
         
@@ -391,9 +379,7 @@
 
   window.addEventListener('load', () => {
     setTimeout(() => {
-        if (!playCustomSound('welcome')) {
-            speak("خوش آمدید");
-        }
+        speak("خوش آمدید");
     }, 1000);
   });
 </script>
