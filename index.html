@@ -78,15 +78,8 @@
     </div>
   </div>
 
-  <!-- پیام برد (به تاخیر افتاده) -->
-  <div class="delay-message" id="delay-win">
-      <h1>🏆 آفرین قهرمان! 🏆</h1>
-  </div>
-
-  <!-- پیام باخت (به تاخیر افتاده) -->
-  <div class="delay-message" id="delay-lose">
-      <h1>💔 قلعه سقوط کرد! 💔</h1>
-  </div>
+  <div class="delay-message" id="delay-win"><h1>🏆 آفرین قهرمان! 🏆</h1></div>
+  <div class="delay-message" id="delay-lose"><h1>💔 قلعه سقوط کرد! 💔</h1></div>
 
   <div class="screen active" id="screen-start">
     <h1>🏰 قلعه فرهان و دوستانش 🏰</h1>
@@ -118,6 +111,7 @@
   let score = 0; let lives = 3; let timeLeft = 40; let gameActive = false;
   let bubbles = []; let animationId; let lastTime = 0; let bubbleSpawnTimer = 0; let castleLineY = 0;
   let isFinalTenSeconds = false;
+  let isInFirst20Seconds = true; // برای تشخیص 20 ثانیه اول
   let confettiInterval = null;
 
   const goodWords = ["مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام", "همدلی", "فداکاری", "بخشش", "صداقت"];
@@ -131,7 +125,10 @@
   ];
   let currentWinQuestion = "";
 
-  // 10 رنگ مختلف
+  // رنگ‌های 20 ثانیه اول: فقط زرد، سبز، آبی
+  const firstPhaseColors = ['#FBBF24', '#4ADE80', '#3B82F6'];
+  
+  // رنگ‌های بعد از 20 ثانیه: 10 رنگ مختلف
   const allColors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
 
   // ====== مدیریت صداها ======
@@ -140,30 +137,6 @@
   winSound.preload = 'auto';
   loseSound.preload = 'auto';
 
-  // ترفند قطعی برای باز کردن قفل صدا در اندروید
-  function unlockAudioForAndroid() {
-      // تنظیم صدا روی بی‌صدا
-      winSound.volume = 0;
-      loseSound.volume = 0;
-      
-      // تلاش برای پخش
-      const playWin = winSound.play();
-      const playLose = loseSound.play();
-      
-      Promise.all([playWin, playLose]).then(() => {
-          // اگر پخش شروع شد، فوراً متوقفش کن
-          winSound.pause(); loseSound.pause();
-          winSound.currentTime = 0; loseSound.currentTime = 0;
-          // بازگرداندن صدا به حالت عادی برای استفاده‌های بعدی
-          winSound.volume = 1.0; loseSound.volume = 1.0;
-      }).catch(error => {
-          // در صورت خطا، فقط صدا را به حالت عادی برمی‌گردانیم
-          winSound.volume = 1.0; loseSound.volume = 1.0;
-          console.log("Unlock audio attempted but browser rejected:", error);
-      });
-  }
-
-  // صداهای پیش‌فرض برای لمس حباب
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playDefaultSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -235,9 +208,6 @@
   function updateLivesUI() { livesDisplay.innerHTML = ''; for(let i=0; i<3; i++) { let span = document.createElement('span'); span.className = 'heart'; span.innerText = i < lives ? '❤️' : '🖤'; livesDisplay.appendChild(span); } }
 
   function startGame() {
-    // این خط حیاتی است: قفل صدا را باز می‌کند
-    unlockAudioForAndroid();
-    
     document.getElementById('screen-start').classList.remove('active');
     score = 0; lives = 3;
     updateLivesUI(); scoreDisplay.innerText = 'امتیاز: 0';
@@ -249,6 +219,7 @@
     bubbles.forEach(b => b.element.remove()); bubbles = [];
     timeLeft = 40; timeBar.style.width = '100%'; bubbleSpawnTimer = 0; gameActive = true;
     isFinalTenSeconds = false;
+    isInFirst20Seconds = true; // ریست کردن حالت 20 ثانیه اول
     lastTime = performance.now(); if (animationId) cancelAnimationFrame(animationId); gameLoop(lastTime);
   }
 
@@ -261,9 +232,14 @@
     const el = document.createElement('div');
     el.className = 'bubble';
     
-    // رنگ‌بندی جدید: هم برای خوب و هم بد، از تمام 10 رنگ استفاده می‌شود
-    const randomColor = allColors[Math.floor(Math.random() * allColors.length)];
-    el.style.background = randomColor;
+    // ==== منطق رنگ‌بندی (20 ثانیه اول: 3 رنگ / بعد از آن: 10 رنگ) ====
+    if (isInFirst20Seconds) {
+        const randomColor = firstPhaseColors[Math.floor(Math.random() * firstPhaseColors.length)];
+        el.style.background = randomColor;
+    } else {
+        const randomColor = allColors[Math.floor(Math.random() * allColors.length)];
+        el.style.background = randomColor;
+    }
     el.style.border = '3px solid rgba(255,255,255,0.6)';
 
     el.style.width = size + 'px'; el.style.height = size + 'px';
@@ -300,6 +276,11 @@
     if(percent < 0) percent = 0;
     timeBar.style.width = percent + '%';
 
+    // تشخیص 20 ثانیه اول
+    if (timeLeft <= 20 && isInFirst20Seconds) {
+        isInFirst20Seconds = false;
+    }
+
     if (timeLeft <= 10 && !isFinalTenSeconds) {
         isFinalTenSeconds = true;
         timeBar.style.background = '#EF4444';
@@ -331,12 +312,8 @@
     if (!isTimeUp) {
         document.getElementById('delay-lose').classList.add('active');
         
-        // پخش صدای باخت
         loseSound.currentTime = 0;
-        loseSound.play().catch(e => {
-            console.log("Lose sound failed, falling back to TTS");
-            speak("دوباره تلاش کن قهرمان");
-        });
+        loseSound.play().catch(e => speak("دوباره تلاش کن قهرمان"));
         
         setTimeout(() => {
             document.getElementById('delay-lose').classList.remove('active');
@@ -346,12 +323,8 @@
     } else {
         document.getElementById('delay-win').classList.add('active');
         
-        // پخش صدای برد
         winSound.currentTime = 0;
-        winSound.play().catch(e => {
-            console.log("Win sound failed, falling back to TTS");
-            speak("آفرین قهرمان");
-        });
+        winSound.play().catch(e => speak("آفرین قهرمان"));
         
         startConfettiBlast();
         
