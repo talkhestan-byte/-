@@ -103,6 +103,7 @@
   let score = 0; let lives = 3; let timeLeft = 40; let gameActive = false;
   let bubbles = []; let animationId; let lastTime = 0; let bubbleSpawnTimer = 0; let castleLineY = 0;
   let isFinalTenSeconds = false;
+  let confettiInterval = null;
 
   const goodWords = ["مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام", "همدلی", "فداکاری", "بخشش", "صداقت"];
   const badWords = ["فحش", "کتک زدن", "مسخره", "احمق", "دعوا", "هل دادن", "داد زدن", "بی‌احترامی", "زورگویی"];
@@ -117,8 +118,31 @@
 
   const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
 
+  // ====== مدیریت صداها (فایل یا پیش‌فرض) ======
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  function playSound(type) {
+  
+  // تلاش برای لود فایل‌های صوتی کاربر
+  const customSounds = {
+      welcome: new Audio('welcome.mp3'),
+      win: new Audio('win.mp3'),
+      lose: new Audio('lose.mp3'),
+      click: new Audio('click.mp3')
+  };
+  
+  function playCustomSound(key) {
+      const audio = customSounds[key];
+      if (!audio) return;
+      // بررسی اینکه آیا فایل لود شده است
+      if (audio.error === null && audio.readyState >= 2) {
+          audio.currentTime = 0;
+          audio.play().catch(e => console.log("Audio play failed:", e));
+          return true;
+      }
+      return false;
+  }
+
+  // صدای پیش‌فرض (اگر فایل صوتی موجود نبود)
+  function playDefaultSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const now = audioCtx.currentTime;
     
@@ -133,31 +157,22 @@
         osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.3); 
         gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); 
     } else if (type === 'cheer') {
-        // شبیه‌سازی دست زدن و سوت کشیدن با نویز سفید
-        const bufferSize = audioCtx.sampleRate * 3; // 3 ثانیه
+        const bufferSize = audioCtx.sampleRate * 3;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = (Math.random() * 2 - 1) * 0.5;
-        }
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
         const noise = audioCtx.createBufferSource();
         noise.buffer = buffer;
-        
         const filter = audioCtx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 1000;
-        filter.Q.value = 1;
-        
+        filter.type = 'bandpass'; filter.frequency.value = 1000; filter.Q.value = 1;
         const gain = audioCtx.createGain();
         gain.gain.setValueAtTime(0, now);
         gain.gain.linearRampToValueAtTime(0.15, now + 0.5);
         gain.gain.linearRampToValueAtTime(0.1, now + 2.5);
         gain.gain.linearRampToValueAtTime(0, now + 3);
-        
         noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
         noise.start(now);
         
-        // افزودن یک سوت بلند
         const whistle = audioCtx.createOscillator(); const wGain = audioCtx.createGain();
         whistle.connect(wGain); wGain.connect(audioCtx.destination);
         whistle.type = 'sine'; whistle.frequency.setValueAtTime(2000, now);
@@ -183,32 +198,42 @@
     }
   }
 
-  function shootConfetti() {
-    for (let i = 0; i < 120; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = (window.innerWidth / 2) + 'px';
-        confetti.style.top = '50px';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-        
-        const xMove = (Math.random() - 0.5) * window.innerWidth * 1.5;
-        const duration = 1.5 + Math.random() * 1.5;
-        const delay = Math.random() * 0.5;
-        
-        confetti.animate([
-            { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-            { transform: `translate(${xMove}px, 105vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-        ], {
-            duration: duration * 1000,
-            delay: delay * 1000,
-            easing: 'cubic-bezier(.37,0,.63,1)',
-            fill: 'forwards'
-        });
-        
-        canvas.appendChild(confetti);
-        setTimeout(() => confetti.remove(), (duration + delay) * 1000 + 500);
-    }
+  // ====== افکت کانفتی ۵ ثانیه‌ای ======
+  function startConfettiBlast() {
+    let count = 0;
+    if (confettiInterval) clearInterval(confettiInterval);
+    
+    confettiInterval = setInterval(() => {
+        // هر 100 میلی‌ثانیه، 20 تا کاغذ رنگی جدید
+        for (let i = 0; i < 20; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = (window.innerWidth / 2) + 'px';
+            confetti.style.top = '50px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            
+            const xMove = (Math.random() - 0.5) * window.innerWidth * 1.5;
+            const duration = 2 + Math.random() * 1.5;
+            
+            confetti.animate([
+                { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                { transform: `translate(${xMove}px, 105vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+            ], {
+                duration: duration * 1000,
+                easing: 'cubic-bezier(.37,0,.63,1)',
+                fill: 'forwards'
+            });
+            
+            canvas.appendChild(confetti);
+            setTimeout(() => confetti.remove(), duration * 1000 + 500);
+        }
+        count++;
+        if (count >= 50) { // 50 * 100ms = 5 ثانیه
+            clearInterval(confettiInterval);
+            confettiInterval = null;
+        }
+    }, 100);
   }
 
   function updateLivesUI() { livesDisplay.innerHTML = ''; for(let i=0; i<3; i++) { let span = document.createElement('span'); span.className = 'heart'; span.innerText = i < lives ? '❤️' : '🖤'; livesDisplay.appendChild(span); } }
@@ -239,11 +264,9 @@
     
     // ==== منطق رنگ‌ها ====
     if (!isFinalTenSeconds) {
-        // ۱۰ ثانیه اول: رنگ سبز و قرمز ثابت
         el.style.background = isGood ? 'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)' : 'radial-gradient(circle at 30% 30%, #F87171, #DC2626)';
         el.style.border = isGood ? '3px solid #86EFAC' : '3px solid #FCA5A5';
     } else {
-        // ۱۰ ثانیه آخر: رنگ‌ها تصادفی می‌شوند
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
         el.style.background = randomColor;
         el.style.border = '3px solid rgba(255,255,255,0.5)';
@@ -253,7 +276,13 @@
     el.style.left = x + 'px'; el.style.top = '-150px';
     el.innerText = word; el.style.fontSize = (size / 5.5) + 'px';
 
-    const bubble = { element: el, x: x, y: -150, size: size, speed: 2.5 + Math.random() * 1.5, isGood: isGood, isDead: false };
+    // ==== کاهش جزئی سرعت در 10 ثانیه آخر ====
+    let baseSpeed = 2.5 + Math.random() * 1.5;
+    if (isFinalTenSeconds) {
+        baseSpeed *= 0.8; // 20% کاهش سرعت
+    }
+
+    const bubble = { element: el, x: x, y: -150, size: size, speed: baseSpeed, isGood: isGood, isDead: false };
 
     el.onpointerdown = (e) => {
         e.preventDefault();
@@ -261,9 +290,11 @@
         bubble.isDead = true; el.remove(); 
         
         if (isGood) {
-            score += 10; scoreDisplay.innerText = 'امتیاز: ' + score; playSound('good');
+            score += 10; scoreDisplay.innerText = 'امتیاز: ' + score; 
+            // پخش صدای کلیک سفارشی (اگر نبود، صدای پیش‌فرض)
+            if (!playCustomSound('click')) playDefaultSound('good');
         } else {
-            lives--; updateLivesUI(); playSound('bad');
+            lives--; updateLivesUI(); playDefaultSound('bad');
             if (lives <= 0) endGame(false);
         }
         bubbles = bubbles.filter(b => b !== bubble);
@@ -279,7 +310,6 @@
     if(percent < 0) percent = 0;
     timeBar.style.width = percent + '%';
 
-    // تنظیم حالت 10 ثانیه آخر
     if (timeLeft <= 10 && !isFinalTenSeconds) {
         isFinalTenSeconds = true;
         timeBar.style.background = '#EF4444';
@@ -311,19 +341,25 @@
     bubbles = [];
     
     if (!isTimeUp) {
-        // باخت
-        document.getElementById('screen-lose').classList.add('active');
-        setTimeout(() => speak("دوباره تلاش کن قهرمان"), 500);
+        // باخت: مکث 5 ثانیه‌ای
+        setTimeout(() => {
+            document.getElementById('screen-lose').classList.add('active');
+            if (!playCustomSound('lose')) {
+                speak("دوباره تلاش کن قهرمان");
+            }
+        }, 5000);
     } else {
         // برد
         document.getElementById('screen-win').classList.add('active');
         currentWinQuestion = winQuestions[Math.floor(Math.random() * winQuestions.length)];
         document.getElementById('win-question').innerText = currentWinQuestion;
         
-        playSound('cheer'); // تشویق و سوت
-        shootConfetti(); // کانفتی
+        // پخش فایل صوتی تشویق (اگر موجود باشد) یا صدای پیش‌فرض
+        if (!playCustomSound('win')) {
+            playDefaultSound('cheer');
+        }
         
-        setTimeout(() => speak("آفرین قهرمان"), 500);
+        startConfettiBlast(); // کانفتی برای 5 ثانیه
     }
   }
 
@@ -333,7 +369,6 @@
         alert("لطفاً به سوال پاسخ دهید.");
         return;
     }
-    // بستن برنامه پس از پاسخ
     if (window.Capacitor && window.Capacitor.Plugins.App) {
         window.Capacitor.Plugins.App.exitApp();
     } else {
@@ -343,7 +378,11 @@
   }
 
   window.addEventListener('load', () => {
-    setTimeout(() => speak("بچه های گلم خوش اومدین به بازی ما"), 1000);
+    setTimeout(() => {
+        if (!playCustomSound('welcome')) {
+            speak("بچه های گلم خوش اومدین به بازی ما");
+        }
+    }, 1000);
   });
 </script>
 </body>
