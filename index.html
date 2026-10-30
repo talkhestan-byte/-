@@ -3,579 +3,607 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#172554">
 <title>قلعه فرهان و دوستانش</title>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;900&display=swap');
-  * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh; height: 100dvh; font-family: 'Vazirmatn', Tahoma, sans-serif; touch-action: none; background: #87CEEB; }
-  #game-container { position: relative; width: 100%; height: 100%; overflow: hidden; }
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;700;900&display=swap');
 
-  /* ================== آسمان ================== */
-  .sky {
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg,
-      #1e3a8a 0%, #3b82f6 20%, #60a5fa 40%, #93c5fd 55%,
-      #bfdbfe 68%, #fde68a 80%, #fca5a5 90%, #f87171 100%);
-    z-index: 0;
-  }
-  .sun {
-    position: absolute; top: 70px; right: 40px;
-    width: 130px; height: 130px;
-    background: radial-gradient(circle, #fff9c4 0%, #fde047 40%, #f59e0b 70%, transparent 100%);
-    border-radius: 50%;
-    box-shadow: 0 0 80px #fde047, 0 0 150px rgba(253,224,71,0.5);
-    z-index: 1;
-    animation: sunPulse 4s ease-in-out infinite;
-  }
-  @keyframes sunPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 80px #fde047, 0 0 150px rgba(253,224,71,0.5); }
-    50% { transform: scale(1.05); box-shadow: 0 0 100px #fde047, 0 0 200px rgba(253,224,71,0.7); }
-  }
-  .sun-rays {
-    position: absolute; top: 30px; right: 0;
-    width: 220px; height: 220px;
-    background: radial-gradient(circle, transparent 45%, rgba(253,224,71,0.15) 55%, transparent 70%);
-    animation: rotateRays 30s linear infinite;
-    z-index: 0;
-  }
-  @keyframes rotateRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
 
-  /* ================== ابرها ================== */
-  .cloud { position: absolute; z-index: 2; opacity: 0.95; will-change: transform; }
-  .cloud-shape {
-    position: relative; background: white; border-radius: 100px;
-    box-shadow: inset -8px -8px 20px rgba(147,197,253,0.35), 0 10px 25px rgba(255,255,255,0.5);
-  }
-  .cloud-shape::before, .cloud-shape::after {
-    content: ''; position: absolute; background: white; border-radius: 50%;
-  }
-  .cloud-shape::before { width: 55%; height: 130%; top: -55%; left: 15%; box-shadow: inset -5px -5px 15px rgba(147,197,253,0.25); }
-  .cloud-shape::after { width: 45%; height: 110%; top: -45%; right: 10%; box-shadow: inset -5px -5px 15px rgba(147,197,253,0.25); }
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+  touch-action: manipulation;
+}
 
-  .cloud-1 { top: 12%; width: 130px; height: 45px; animation: driftCloud 55s linear infinite; }
-  .cloud-2 { top: 24%; width: 90px; height: 32px; animation: driftCloud 70s linear infinite; animation-delay: -10s; opacity: 0.85; }
-  .cloud-3 { top: 8%; width: 160px; height: 55px; animation: driftCloud 80s linear infinite; animation-delay: -30s; opacity: 0.9; }
-  .cloud-4 { top: 32%; width: 75px; height: 28px; animation: driftCloud 65s linear infinite; animation-delay: -25s; opacity: 0.75; }
-  .cloud-5 { top: 18%; width: 110px; height: 40px; animation: driftCloud 90s linear infinite; animation-delay: -50s; opacity: 0.85; }
-  .cloud-6 { top: 40%; width: 60px; height: 22px; animation: driftCloud 60s linear infinite; animation-delay: -15s; opacity: 0.7; }
+body {
+  background: #60a5fa;
+}
 
-  @keyframes driftCloud {
-    from { transform: translateX(-250px); }
-    to { transform: translateX(calc(100vw + 250px)); }
-  }
+button {
+  font-family: inherit;
+  touch-action: manipulation;
+}
 
-  /* ================== کوه‌ها ================== */
-  .mountains-far {
-    position: absolute; bottom: 38%; left: 0; right: 0; height: 22%;
-    z-index: 3;
-    background: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 60%, #7c3aed 100%);
-    clip-path: polygon(
-      0% 100%, 0% 60%, 8% 45%, 15% 55%, 22% 35%, 30% 50%,
-      38% 25%, 46% 48%, 54% 30%, 62% 55%, 70% 40%, 78% 58%,
-      86% 42%, 93% 55%, 100% 45%, 100% 100%);
-    opacity: 0.75;
-  }
-  .mountains-far::before {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(180deg, #f8fafc 0%, #e0e7ff 8%, transparent 22%);
-    clip-path: polygon(
-      0% 100%, 0% 60%, 8% 45%, 15% 55%, 22% 35%, 30% 50%,
-      38% 25%, 46% 48%, 54% 30%, 62% 55%, 70% 40%, 78% 58%,
-      86% 42%, 93% 55%, 100% 45%, 100% 100%);
-    opacity: 0.85;
-  }
-  .mountains-near {
-    position: absolute; bottom: 30%; left: 0; right: 0; height: 18%;
-    z-index: 4;
-    background: linear-gradient(180deg, #10b981 0%, #059669 60%, #047857 100%);
-    clip-path: polygon(
-      0% 100%, 0% 70%, 10% 50%, 20% 65%, 30% 40%,
-      42% 60%, 52% 35%, 63% 58%, 74% 42%, 85% 62%,
-      93% 48%, 100% 65%, 100% 100%);
-  }
+#game-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(
+    180deg,
+    #1e3a8a 0%,
+    #3b82f6 23%,
+    #93c5fd 48%,
+    #fde68a 73%,
+    #fca5a5 100%
+  );
+}
 
-  /* ================== جنگل ================== */
-  .forest {
-    position: absolute; bottom: 22%; left: 0; right: 0; height: 14%;
-    z-index: 5; display: flex; justify-content: space-around; align-items: flex-end; padding: 0 2%;
-  }
-  .tree {
-    position: relative; width: 0; height: 0;
-    border-left: 18px solid transparent; border-right: 18px solid transparent;
-    border-bottom: 45px solid #047857;
-    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
-  }
-  .tree::after {
-    content: ''; position: absolute; bottom: -45px; left: -14px;
-    width: 28px; height: 30px;
-    border-left: 14px solid transparent; border-right: 14px solid transparent;
-    border-bottom: 35px solid #059669;
-  }
-  .tree::before {
-    content: ''; position: absolute; bottom: -60px; left: -2px;
-    width: 6px; height: 15px; background: #78350f;
-  }
-  .tree:nth-child(2n) { transform: scale(0.85); border-bottom-color: #065f46; }
-  .tree:nth-child(3n) { transform: scale(1.1); }
-  .tree:nth-child(4n) { transform: scale(0.75); border-bottom-color: #0891b2; }
-  .tree:nth-child(5n) { transform: scale(0.95); border-bottom-color: #10b981; }
+.sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    #1e3a8a,
+    #3b82f6 22%,
+    #93c5fd 48%,
+    #fde68a 75%,
+    #f87171
+  );
+}
 
-  /* ================== رودخانه ================== */
-  .river {
-    position: absolute; bottom: 12%; left: 0; right: 0; height: 12%;
-    z-index: 6;
-    background: linear-gradient(180deg, #06b6d4 0%, #0891b2 40%, #0e7490 100%);
-    overflow: hidden;
-  }
-  .river::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 100%;
-    background: repeating-linear-gradient(90deg,
-      transparent 0px, rgba(255,255,255,0.25) 20px,
-      transparent 40px, rgba(255,255,255,0.15) 60px, transparent 80px);
-    animation: riverFlow 8s linear infinite;
-  }
-  @keyframes riverFlow {
-    from { transform: translateX(0); } to { transform: translateX(80px); }
-  }
+.sun {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  top: 85px;
+  right: 25px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff9c4, #facc15 60%, transparent 75%);
+  box-shadow: 0 0 60px #fde047;
+  z-index: 1;
+  animation: sunPulse 4s infinite alternate;
+}
 
-  /* ================== چمن ================== */
-  .grass-ground {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 14%;
-    z-index: 7;
-    background: linear-gradient(180deg, #4ade80 0%, #22c55e 30%, #16a34a 70%, #15803d 100%);
-  }
-  .flowers {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 14%;
-    z-index: 8; pointer-events: none; overflow: hidden;
-  }
-  .flower {
-    position: absolute; border-radius: 50%;
-    animation: sway 3s ease-in-out infinite;
-  }
-  @keyframes sway {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
-  }
+@keyframes sunPulse {
+  to { transform: scale(1.08); }
+}
 
-  /* ================== قلعه ================== */
-  #castle-container {
-    position: absolute; bottom: 5%; left: 50%;
-    transform: translateX(-50%);
-    width: 200px; height: 170px;
-    z-index: 20;
-    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3));
-  }
-  .tower-left, .tower-right {
-    position: absolute; bottom: 0; width: 55px; height: 120px;
-    background: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 40%, #7c3aed 100%);
-    border-radius: 8px 8px 0 0;
-    box-shadow: inset -5px -5px 0 rgba(0,0,0,0.15), inset 5px 5px 0 rgba(255,255,255,0.1);
-  }
-  .tower-left { left: 0; } .tower-right { right: 0; }
-  .tower-left::before, .tower-right::before {
-    content: ''; position: absolute; top: -8px; left: 0; right: 0; height: 12px;
-    background: repeating-linear-gradient(90deg, #8b5cf6 0px, #8b5cf6 10px, transparent 10px, transparent 18px);
-    border-radius: 4px 4px 0 0;
-  }
-  .tower-left::after, .tower-right::after {
-    content: ''; position: absolute; top: 25px; left: 50%; transform: translateX(-50%);
-    width: 16px; height: 22px; background: #fbbf24;
-    border-radius: 8px 8px 0 0;
-    box-shadow: 0 0 8px #fbbf24, inset 0 0 4px rgba(0,0,0,0.4);
-  }
-  .castle-body {
-    position: absolute; bottom: 0; left: 40px; right: 40px; height: 90px;
-    background: linear-gradient(180deg, #c4b5fd 0%, #a78bfa 40%, #8b5cf6 100%);
-    box-shadow: inset -8px -8px 0 rgba(0,0,0,0.15), inset 8px 8px 0 rgba(255,255,255,0.15);
-  }
-  .castle-body::before {
-    content: ''; position: absolute; top: -10px; left: 0; right: 0; height: 12px;
-    background: repeating-linear-gradient(90deg, #a78bfa 0px, #a78bfa 12px, transparent 12px, transparent 20px);
-  }
-  .door {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 42px; height: 55px;
-    background: linear-gradient(180deg, #451a03 0%, #78350f 50%, #451a03 100%);
-    border-radius: 21px 21px 0 0;
-    border: 3px solid #a16207;
-    box-shadow: inset 0 -10px 15px rgba(0,0,0,0.6);
-    z-index: 3;
-  }
-  .door::after {
-    content: ''; position: absolute; top: 50%; right: 6px;
-    width: 5px; height: 5px; background: #fbbf24;
-    border-radius: 50%; box-shadow: 0 0 4px #fbbf24;
-  }
+.cloud {
+  position: absolute;
+  z-index: 2;
+  width: 100px;
+  height: 30px;
+  background: #fff;
+  border-radius: 40px;
+  opacity: .9;
+  animation: clouds 55s linear infinite;
+}
 
-  /* ================== پرچم ایران ================== */
-  .flag-pole {
-    position: absolute; top: -55px; left: 50%; transform: translateX(-50%);
-    width: 4px; height: 60px;
-    background: linear-gradient(90deg, #78716c, #d6d3d1, #78716c);
-    border-radius: 2px; z-index: 5;
-  }
-  .flag-iran {
-    position: absolute; top: -55px; left: calc(50% + 2px);
-    width: 50px; height: 32px;
-    display: flex; flex-direction: column;
-    animation: waveFlag 2.5s ease-in-out infinite;
-    transform-origin: right center;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
-    border-radius: 0 3px 3px 0;
-    overflow: hidden; z-index: 4;
-  }
-  .flag-green  { flex: 1; background: #239f40; }
-  .flag-white  { flex: 1; background: #ffffff; display: flex; align-items: center; justify-content: center; }
-  .flag-red    { flex: 1; background: #da0000; }
-  .flag-white::after { content: '☫'; font-size: 12px; color: #da0000; line-height: 1; }
-  @keyframes waveFlag {
-    0%, 100% { transform: skewY(0deg) scaleX(1); }
-    50% { transform: skewY(-3deg) scaleX(0.96); }
-  }
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+}
 
-  /* ================== هدر ================== */
-  #header {
-    position: absolute; top: 0; left: 0; right: 0;
-    padding: 14px 22px;
-    display: flex; justify-content: space-between; align-items: center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
-    backdrop-filter: blur(12px);
-    font-size: 20px; font-weight: 900; color: #1E293B;
-    z-index: 100;
-    border-bottom: 4px solid;
-    border-image: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6, #3b82f6, #10b981) 1;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  }
-  #score-display {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    padding: 4px 12px; border-radius: 10px; background-color: rgba(251,191,36,0.1);
-  }
-  .heart {
-    color: #ef4444; font-size: 26px; margin-left: 3px;
-    filter: drop-shadow(0 2px 3px rgba(239,68,68,0.4));
-    display: inline-block;
-    animation: heartBeat 1.5s ease-in-out infinite;
-  }
-  @keyframes heartBeat {
-    0%, 100% { transform: scale(1); }
-    20% { transform: scale(1.15); }
-    40% { transform: scale(1); }
-  }
-  #time-bar-container {
-    position: absolute; top: 66px; left: 0;
-    width: 100%; height: 12px; background: rgba(0,0,0,0.15);
-    z-index: 100; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-  }
-  #time-bar {
-    height: 100%; width: 100%;
-    background: linear-gradient(90deg, #10b981, #22c55e, #4ade80);
-    transition: width 0.1s linear, background 0.5s;
-    box-shadow: 0 0 10px rgba(34,197,94,0.6);
-  }
+.cloud::before {
+  width: 45px;
+  height: 45px;
+  left: 15px;
+  top: -20px;
+}
 
-  /* ================== حباب‌ها ================== */
-  .bubble {
-    position: absolute; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 900; text-align: center;
-    box-shadow:
-      inset -8px -8px 20px rgba(0,0,0,0.25),
-      inset 8px 8px 20px rgba(255,255,255,0.3),
-      0 8px 20px rgba(0,0,0,0.25);
-    cursor: pointer; z-index: 30; padding: 6px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.45);
-    line-height: 1.15;
-    will-change: top;
-  }
-  .bubble::before {
-    content: ''; position: absolute; top: 12%; left: 15%;
-    width: 22%; height: 22%;
-    background: radial-gradient(circle, rgba(255,255,255,0.9), transparent);
-    border-radius: 50%; pointer-events: none;
-  }
+.cloud::after {
+  width: 35px;
+  height: 35px;
+  right: 15px;
+  top: -13px;
+}
 
-  /* ================== کانفتی ================== */
-  .confetti {
-    position: absolute; width: 12px; height: 12px;
-    z-index: 150; opacity: 0.9; top: -20px; pointer-events: none;
-  }
+.cloud.c1 { top: 14%; left: -120px; }
+.cloud.c2 { top: 25%; left: -120px; animation-delay: -20s; }
+.cloud.c3 { top: 8%; left: -120px; animation-delay: -35s; }
 
-  /* ================== صفحات ================== */
-  .screen {
-    position: absolute; inset: 0; z-index: 200;
-    display: none; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: rgba(15, 23, 42, 0.95);
-    color: white; text-align: center; padding: 20px;
-    opacity: 0; transition: opacity 0.5s;
-    overflow-y: auto;
-  }
-  .screen.active { display: flex; opacity: 1; }
-  .screen h1 {
-    font-size: 34px;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b, #ef4444, #fbbf24);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
-  }
-  .screen p {
-    font-size: 20px; line-height: 1.8;
-    max-width: 500px; margin-bottom: 25px; font-weight: 700;
-  }
-  .screen button {
-    padding: 15px 40px; font-size: 24px;
-    font-family: inherit; font-weight: 900;
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white; border: none; border-radius: 15px;
-    cursor: pointer;
-    box-shadow: 0 8px 0 #047857, 0 12px 20px rgba(16,185,129,0.4);
-    transition: all 0.1s;
-  }
-  .screen button:active {
-    transform: translateY(4px);
-    box-shadow: 0 4px 0 #047857, 0 8px 15px rgba(16,185,129,0.4);
-  }
+@keyframes clouds {
+  from { transform: translateX(-120px); }
+  to { transform: translateX(calc(100vw + 250px)); }
+}
 
-  /* ================== صفحه شروع اصلاح شده ================== */
-  #screen-start {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(8px);
-    justify-content: center;
-    padding: 16px 12px;
-  }
-  #start-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 600px;
-    gap: clamp(10px, 2vh, 20px);
-    margin: auto;
-  }
+.mountains-far {
+  position: absolute;
+  bottom: 38%;
+  width: 100%;
+  height: 23%;
+  z-index: 3;
+  background: linear-gradient(#a78bfa, #6d28d9);
+  clip-path: polygon(
+    0 100%, 0 60%, 12% 35%, 22% 60%, 38% 20%,
+    50% 55%, 65% 25%, 80% 60%, 92% 35%, 100% 55%, 100% 100%
+  );
+}
 
-  /* تصویر icon-only بدون قاب آیکن قبلی */
-  #start-image-container {
-    width: min(78vw, 340px);
-    max-height: 38vh;
-    aspect-ratio: 1 / 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 1;
-    margin: 0 auto;
-    overflow: hidden;
-    border-radius: 24px;
-  }
+.mountains-near {
+  position: absolute;
+  bottom: 29%;
+  width: 100%;
+  height: 20%;
+  z-index: 4;
+  background: linear-gradient(#10b981, #047857);
+  clip-path: polygon(
+    0 100%, 0 55%, 15% 35%, 30% 65%, 45% 30%,
+    60% 60%, 75% 35%, 90% 55%, 100% 40%, 100% 100%
+  );
+}
+
+.forest {
+  position: absolute;
+  bottom: 21%;
+  left: 0;
+  width: 100%;
+  height: 15%;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+}
+
+.tree {
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 48px solid #047857;
+  position: relative;
+}
+
+.tree::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 30px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 32px solid #059669;
+}
+
+.river {
+  position: absolute;
+  bottom: 10%;
+  width: 100%;
+  height: 13%;
+  z-index: 6;
+  background: repeating-linear-gradient(
+    175deg,
+    #0891b2 0,
+    #06b6d4 12px,
+    #0e7490 24px
+  );
+  animation: river 4s linear infinite;
+}
+
+@keyframes river {
+  50% { filter: brightness(1.12); }
+}
+
+.grass-ground {
+  position: absolute;
+  bottom: 0;
+  height: 15%;
+  width: 100%;
+  z-index: 7;
+  background: linear-gradient(#4ade80, #15803d);
+}
+
+#flowers {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 14%;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.flower {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+#castle-container {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 190px;
+  height: 165px;
+  z-index: 20;
+  filter: drop-shadow(0 7px 10px #0005);
+}
+
+.tower-left,
+.tower-right {
+  position: absolute;
+  bottom: 0;
+  width: 52px;
+  height: 115px;
+  background: linear-gradient(#c4b5fd, #7c3aed);
+  border-radius: 6px 6px 0 0;
+}
+
+.tower-left { left: 0; }
+.tower-right { right: 0; }
+
+.tower-left::before,
+.tower-right::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 100%;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg, #8b5cf6 0 10px, transparent 10px 17px
+  );
+}
+
+.tower-left::after,
+.tower-right::after {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 22px;
+  background: #fbbf24;
+  border-radius: 9px 9px 0 0;
+}
+
+.castle-body {
+  position: absolute;
+  bottom: 0;
+  left: 38px;
+  right: 38px;
+  height: 88px;
+  background: linear-gradient(#c4b5fd, #8b5cf6);
+}
+
+.castle-body::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg, #a78bfa 0 12px, transparent 12px 20px
+  );
+}
+
+.door {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 53px;
+  background: linear-gradient(#78350f, #451a03);
+  border: 3px solid #a16207;
+  border-radius: 20px 20px 0 0;
+  z-index: 3;
+}
+
+.flag-pole {
+  position: absolute;
+  top: -53px;
+  left: 50%;
+  width: 3px;
+  height: 58px;
+  background: #e5e7eb;
+  z-index: 5;
+}
+
+.flag-iran {
+  position: absolute;
+  top: -52px;
+  left: calc(50% + 3px);
+  width: 45px;
+  height: 28px;
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+}
+
+.flag-green { flex: 1; background: #239f40; }
+.flag-white { flex: 1; background: #fff; }
+.flag-red { flex: 1; background: #da0000; }
+
+#header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 58px;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffffed;
+  border-bottom: 3px solid #f59e0b;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 900;
+  z-index: 100;
+}
+
+#score-display { color: #b45309; }
+.heart { font-size: 22px; margin-left: 3px; }
+
+#time-bar-container {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  width: 100%;
+  height: 9px;
+  background: #0003;
+  z-index: 100;
+}
+
+#time-bar {
+  height: 100%;
+  width: 100%;
+  background: #22c55e;
+  transition: width .1s linear;
+}
+
+.bubble {
+  position: absolute;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 7px;
+  border: 3px solid #ffffffcc;
+  border-radius: 50%;
+  color: white;
+  font-weight: 900;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px #0009;
+  box-shadow: inset -7px -7px 15px #0003, inset 6px 6px 15px #fff5, 0 5px 12px #0004;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+  color: white;
+  text-align: center;
+  background: #0f172af2;
+}
+
+.screen.active { display: flex; }
+
+.screen h1 {
+  font-size: clamp(25px, 6vw, 34px);
+  font-weight: 900;
+  color: #fbbf24;
+  margin: 8px 0 16px;
+}
+
+.screen p {
+  font-size: 19px;
+  line-height: 1.8;
+  font-weight: 700;
+  max-width: 500px;
+}
+
+.screen button {
+  border: 0;
+  border-radius: 16px;
+  padding: 14px 34px;
+  background: linear-gradient(135deg, #10b981, #047857);
+  color: white;
+  font-size: 22px;
+  font-weight: 900;
+  box-shadow: 0 6px 0 #065f46;
+  cursor: pointer;
+}
+
+.screen button:active {
+  transform: translateY(3px);
+}
+
+#screen-start {
+  justify-content: center;
+  background: #0f172aeF;
+  padding: 18px 16px;
+}
+
+#start-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2.5vh, 22px);
+  width: 100%;
+  max-width: 560px;
+  margin: auto;
+}
+
+#start-image {
+  display: block;
+  width: min(68vw, 290px);
+  height: min(32vh, 290px);
+  min-height: 135px;
+  object-fit: contain;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: none;
+}
+
+#start-image.image-error {
+  display: none;
+}
+
+#start-title {
+  font-size: clamp(25px, 6vw, 34px);
+  line-height: 1.5;
+  margin: 0;
+}
+
+#start-rules {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rule-line {
+  width: 100%;
+  padding: 12px 10px;
+  border-radius: 14px;
+  font-size: clamp(16px, 4.4vw, 21px);
+  line-height: 1.7;
+  font-weight: 900;
+}
+
+.rule-good {
+  background: linear-gradient(135deg, #10b981, #047857);
+  border: 2px solid #86efac;
+}
+
+.rule-bad {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: 2px solid #fecaca;
+}
+
+#start-btn {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  box-shadow: 0 6px 0 #b45309, 0 10px 25px #f59e0b55;
+  border: 2px solid #ffffffaa;
+  min-width: 190px;
+  margin-top: 2px;
+}
+
+#champion-box {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  color: #7c2d12;
+  border: 5px solid white;
+  border-radius: 25px;
+  padding: 20px 30px;
+  margin-bottom: 15px;
+}
+
+#champion-box.show { display: flex; }
+
+.trophy { font-size: 55px; }
+.champion-title { font-size: 27px; font-weight: 900; }
+.score-big { font-size: 50px; font-weight: 900; }
+
+.delay-message {
+  position: absolute;
+  inset: 0;
+  z-index: 180;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #0008;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.delay-message.active { display: flex; }
+
+.delay-message h1 {
+  font-size: clamp(28px, 7vw, 44px);
+  text-shadow: 0 4px 12px #000;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 190;
+  pointer-events: none;
+}
+
+@media (max-height: 620px) {
+  #start-content { gap: 8px; }
   #start-image {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    image-rendering: auto;
+    height: 24vh;
+    min-height: 95px;
+    width: min(45vw, 190px);
   }
-
-  #start-title {
-    font-size: 32px;
-    font-weight: 900;
-    color: #fbbf24;
-    text-shadow: 0 3px 10px rgba(0,0,0,0.5), 0 0 30px rgba(251,191,36,0.6);
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeSlideIn 0.8s ease 0.2s forwards;
-    margin: 0;
-    text-align: center;
-  }
-  @keyframes fadeSlideIn {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  #start-rules {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    width: 100%;
-    max-width: 500px;
-    padding: 0 20px;
-  }
-  .rule-line {
-    font-size: 22px;
-    font-weight: 900;
-    padding: 14px 24px;
-    border-radius: 16px;
-    text-align: center;
-    opacity: 0;
-    transform: translateX(-100vw);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  }
-  .rule-good {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    animation: wipeIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
-    border: 2px solid rgba(255,255,255,0.4);
-  }
-  .rule-bad {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    animation: wipeIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s forwards;
-    border: 2px solid rgba(255,255,255,0.4);
-  }
-  @keyframes wipeIn {
-    0% { opacity: 0; transform: translateX(-100vw); }
-    60% { opacity: 1; transform: translateX(20px); }
-    100% { opacity: 1; transform: translateX(0); }
-  }
-
-  #start-btn {
-    padding: 18px 50px;
-    font-size: 26px;
-    font-family: inherit;
-    font-weight: 900;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
-    color: white;
-    border: 3px solid rgba(255,255,255,0.5);
-    border-radius: 20px;
-    cursor: pointer;
-    box-shadow:
-      0 8px 0 #b45309,
-      0 15px 30px rgba(251,191,36,0.5);
-    opacity: 0;
-    transform: scale(0.5) translateY(20px);
-    animation: buttonEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.4s forwards;
-    transition: all 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-  #start-btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    animation: shine 2s ease-in-out infinite 2s;
-  }
-  @keyframes shine {
-    0% { left: -100%; }
-    50% { left: 100%; }
-    100% { left: 100%; }
-  }
-  @keyframes buttonEntrance {
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  #start-btn:active {
-    transform: scale(0.96) translateY(4px) !important;
-    box-shadow: 0 4px 0 #b45309, 0 8px 20px rgba(251,191,36,0.5);
-  }
-
-  @media (max-height: 650px) {
-    #start-image-container {
-      width: min(55vw, 220px);
-      max-height: 28vh;
-    }
-    #start-title { font-size: 25px; }
-    #start-rules { gap: 8px; }
-    .rule-line { font-size: 16px; padding: 9px 12px; }
-    #start-btn { font-size: 21px; padding: 12px 30px; }
-  }
-
-  /* ================== کادر قهرمان ================== */
-  #champion-box {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
-    border: 6px solid #fff;
-    border-radius: 30px;
-    padding: 30px 40px;
-    box-shadow:
-      0 0 0 6px #fbbf24,
-      0 20px 60px rgba(251,191,36,0.6),
-      inset 0 -8px 20px rgba(0,0,0,0.15),
-      inset 0 8px 20px rgba(255,255,255,0.4);
-    margin-bottom: 25px;
-    animation: championPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    max-width: 90%;
-  }
-  #champion-box.show { display: flex; }
-  @keyframes championPop {
-    0% { transform: scale(0.3); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  #champion-box .trophy {
-    font-size: 64px; margin-bottom: 10px;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-    animation: trophyBounce 1.5s ease-in-out infinite;
-  }
-  @keyframes trophyBounce {
-    0%, 100% { transform: translateY(0) rotate(-5deg); }
-    50% { transform: translateY(-8px) rotate(5deg); }
-  }
-  #champion-box .title {
-    font-size: 28px; color: #7c2d12; font-weight: 900;
-    margin-bottom: 12px;
-    text-shadow: 0 2px 0 rgba(255,255,255,0.6);
-  }
-  #champion-box .score-text {
-    font-size: 22px; color: #7c2d12; font-weight: 900; margin-bottom: 8px;
-  }
-  #champion-box .score-big {
-    font-size: 54px; color: #dc2626; font-weight: 900;
-    text-shadow: 0 3px 0 #fff, 0 6px 15px rgba(220,38,38,0.5);
-    line-height: 1;
-  }
-
-  .delay-message {
-    position: absolute; inset: 0; z-index: 180;
-    display: none; align-items: center; justify-content: center;
-    flex-direction: column;
-    background: rgba(0,0,0,0.4);
-    color: white; text-align: center;
-    opacity: 0; transition: opacity 1s;
-  }
-  .delay-message.active { display: flex; opacity: 1; }
-  .delay-message h1 {
-    font-size: 48px; margin-bottom: 20px;
-    text-shadow: 0 5px 15px rgba(0,0,0,0.8);
-  }
+  .rule-line { padding: 7px; }
+  #start-btn { padding: 10px 28px; }
+}
 </style>
 </head>
-<body>
 
+<body>
 <div id="game-container">
+
   <div class="sky"></div>
-  <div class="sun-rays"></div>
   <div class="sun"></div>
 
-  <div class="cloud cloud-1"><div class="cloud-shape"></div></div>
-  <div class="cloud cloud-2"><div class="cloud-shape"></div></div>
-  <div class="cloud cloud-3"><div class="cloud-shape"></div></div>
-  <div class="cloud cloud-4"><div class="cloud-shape"></div></div>
-  <div class="cloud cloud-5"><div class="cloud-shape"></div></div>
-  <div class="cloud cloud-6"><div class="cloud-shape"></div></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
 
   <div class="mountains-far"></div>
   <div class="mountains-near"></div>
 
   <div class="forest">
-    <div class="tree"></div><div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div><div class="tree"></div>
+    <div class="tree"></div><div class="tree"></div>
+    <div class="tree"></div><div class="tree"></div>
+    <div class="tree"></div><div class="tree"></div>
+    <div class="tree"></div><div class="tree"></div>
+    <div class="tree"></div><div class="tree"></div>
+    <div class="tree"></div><div class="tree"></div>
   </div>
 
   <div class="river"></div>
   <div class="grass-ground"></div>
-  <div class="flowers" id="flowers"></div>
+  <div id="flowers"></div>
 
   <div id="header">
-    <div id="score-display">امتیاز: 0</div>
-    <div id="lives-display"></div>
+    <div id="score-display">امتیاز: ۰</div>
+    <div id="lives-display">❤️❤️❤️</div>
   </div>
-  <div id="time-bar-container"><div id="time-bar"></div></div>
+
+  <div id="time-bar-container">
+    <div id="time-bar"></div>
+  </div>
 
   <div id="castle-container">
     <div class="flag-pole"></div>
@@ -590,30 +618,39 @@
     <div class="door"></div>
   </div>
 
-  <div class="delay-message" id="delay-win"><h1>🏆 آفرین قهرمان! 🏆</h1></div>
-  <div class="delay-message" id="delay-lose"><h1>💔 قلعه سقوط کرد! 💔</h1></div>
+  <div class="delay-message" id="delay-win">
+    <h1>🏆 آفرین قهرمان! 🏆</h1>
+  </div>
 
-  <!-- ================== صفحه شروع ================== -->
+  <div class="delay-message" id="delay-lose">
+    <h1>💔 قلعه سقوط کرد! 💔</h1>
+  </div>
+
+  <!-- صفحه شروع: فقط تصویر icon-only نمایش داده می‌شود -->
   <div class="screen active" id="screen-start">
     <div id="start-content">
 
-      <div id="start-image-container">
-        <img
-          id="start-image"
-          src="icon-only.png"
-          alt="قلعه فرهان و دوستانش"
-          draggable="false"
-        >
-      </div>
+      <img
+        id="start-image"
+        src="icon-only.png"
+        alt="قلعه فرهان و دوستانش"
+        onerror="this.classList.add('image-error')"
+      >
 
-      <h1 id="start-title">🏰 قلعه فرهان 🏰</h1>
+      <h1 id="start-title">🏰 قلعه فرهان و دوستانش 🏰</h1>
 
       <div id="start-rules">
-        <div class="rule-line rule-good">✅ روی کلمات خوب ضربه بزن تا برنده بشی</div>
-        <div class="rule-line rule-bad">❌ روی کلمات بد ضربه نزن که می‌بازی</div>
+        <div class="rule-line rule-good">
+          ✅ روی کلمات خوب ضربه بزن تا برنده بشی
+        </div>
+        <div class="rule-line rule-bad">
+          ❌ روی کلمات بد ضربه نزن که می‌بازی
+        </div>
       </div>
 
-      <button id="start-btn" onclick="startGame()">شروع بازی</button>
+      <button id="start-btn" type="button">
+        شروع بازی
+      </button>
     </div>
   </div>
 
@@ -621,478 +658,573 @@
   <div class="screen" id="screen-win">
     <div id="champion-box">
       <div class="trophy">🏆</div>
-      <div class="title">قهرمان!</div>
-      <div class="score-text">امتیاز تو:</div>
-      <div class="score-big" id="final-score">0</div>
+      <div class="champion-title">قهرمان!</div>
+      <p>امتیاز تو:</p>
+      <div class="score-big" id="final-score">۰</div>
     </div>
-    <h1 style="font-size: 26px;">یک سوال برای تو:</h1>
-    <p id="win-question" style="color: #FBBF24; font-size: 22px; margin-bottom: 20px;"></p>
-    <p style="color: #94a3b8; font-size: 18px; margin-bottom: 25px;">🎤 جوابت رو شفاهی به معلمت بگو</p>
-    <button onclick="finishGame()">پایان</button>
+
+    <h1>یک سؤال برای تو:</h1>
+    <p id="win-question" style="color:#fbbf24"></p>
+    <p style="color:#cbd5e1;font-size:16px">
+      🎤 جوابت رو شفاهی به معلمت بگو
+    </p>
+    <button id="finish-btn" type="button">پایان</button>
   </div>
 
   <!-- صفحه باخت -->
   <div class="screen" id="screen-lose">
     <h1>💔 قلعه سقوط کرد! 💔</h1>
     <p>اشکالی نداره قهرمان! دوباره تلاش کن.</p>
-    <button onclick="location.reload()">بازی مجدد</button>
+    <button id="restart-btn" type="button">بازی مجدد</button>
   </div>
+
 </div>
 
+<!-- فایل موسیقی شروع -->
+<audio id="start-music" src="start.mp3" preload="auto" loop></audio>
+<audio id="win-audio" src="win.mp3" preload="auto"></audio>
+<audio id="lose-audio" src="lose.mp3" preload="auto"></audio>
+
 <script>
-  const canvas = document.getElementById('game-container');
-  const scoreDisplay = document.getElementById('score-display');
-  const livesDisplay = document.getElementById('lives-display');
-  const timeBar = document.getElementById('time-bar');
+"use strict";
 
-  let score = 0; let lives = 3; let timeLeft = 40; let gameActive = false;
-  let bubbles = []; let animationId; let lastTime = 0; let bubbleSpawnTimer = 0; let castleLineY = 0;
-  let isFinalTenSeconds = false;
-  let isInFirst20Seconds = true;
-  let confettiInterval = null;
-  let keepAliveTimer = null;
+const $ = id => document.getElementById(id);
 
-  // ====== کلمات مناسب کودکان ۶ تا ۱۰ سال ======
-  const goodWords = [
-    "مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام",
-    "همدلی", "فداکاری", "بخشش", "صداقت", "قول دادن", "گوش دادن",
-    "تشکر کردن", "بغل کردن", "سلام کردن", "بازی کردن", "نقاشی",
-    "کتاب خواندن", "دعا کردن", "احترام به بزرگتر", "صبر کردن",
-    "قانون", "تمیزکاری", "شادی", "دلسوزی", "آرامش", "محبت",
-    "وقت‌شناسی", "کمک به مامان", "کمک به بابا", "مهربان بودن",
-    "خوب گوش دادن", "همکاری", "تعریف کردن", "زود خوابیدن",
-    "دندان مسواک", "غذای سالم", "ورزش کردن", "آب خوردن",
-    "کمک به دوست", "بازی منصفانه", "گفتن حقیقت", "عذر خواهی"
+const gameContainer = $("game-container");
+const scoreDisplay = $("score-display");
+const livesDisplay = $("lives-display");
+const timeBar = $("time-bar");
+
+const startScreen = $("screen-start");
+const winScreen = $("screen-win");
+const loseScreen = $("screen-lose");
+
+const startMusic = $("start-music");
+const winAudio = $("win-audio");
+const loseAudio = $("lose-audio");
+
+let score = 0;
+let lives = 3;
+let timeLeft = 40;
+let gameActive = false;
+let bubbles = [];
+let animationId = null;
+let lastTime = 0;
+let spawnTimer = 0;
+let castleLineY = 0;
+let confettiTimer = null;
+let endTimer = null;
+let firstPhase = true;
+let audioContext = null;
+
+const goodWords = [
+  "مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند",
+  "احترام", "همدلی", "فداکاری", "بخشش", "صداقت",
+  "قول دادن", "گوش دادن", "تشکر کردن", "سلام کردن",
+  "بازی کردن", "نقاشی", "کتاب خواندن", "صبر کردن",
+  "قانون", "تمیزکاری", "شادی", "دلسوزی", "آرامش",
+  "محبت", "همکاری", "ورزش کردن", "آب خوردن",
+  "کمک به دوست", "بازی منصفانه", "گفتن حقیقت",
+  "عذرخواهی", "غذای سالم", "کمک به مامان", "کمک به بابا"
+];
+
+const badWords = [
+  "فحش", "کتک زدن", "مسخره کردن", "دعوا", "هل دادن",
+  "داد زدن", "بی‌احترامی", "زورگویی", "دروغ", "اذیت کردن",
+  "آزار دادن", "شکستن", "غیبت کردن", "بدگویی", "دزدی",
+  "ترساندن", "تقلب", "بی‌ادبی", "جیغ زدن", "لگد زدن",
+  "گاز گرفتن", "تف کردن", "بی‌نظمی", "دروغ گفتن",
+  "قانون‌شکنی", "توهین", "پرت کردن", "کشیدن مو"
+];
+
+const winQuestions = [
+  "وقتی دوستت ناراحت است، چه کار خوبی می‌توانی بکنی؟",
+  "یک کلمه‌ی خوب که امروز یاد گرفتی چیست؟",
+  "چرا دعوا کردن باعث ناراحتی دوستانت می‌شود؟",
+  "چطور با کلمات خوب می‌توانیم دوستانمان را شاد کنیم؟"
+];
+
+const colors = [
+  "#EF4444", "#3B82F6", "#10B981", "#F59E0B",
+  "#8B5CF6", "#EC4899", "#06B6D4", "#F97316"
+];
+
+function randomItem(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function createFlowers() {
+  const flowers = $("flowers");
+  const flowerColors = [
+    "#f472b6", "#fbbf24", "#ef4444",
+    "#a78bfa", "#fb923c", "#ffffff"
   ];
-  const badWords = [
-    "فحش", "کتک زدن", "مسخره", "احمق", "دعوا", "هل دادن",
-    "داد زدن", "بی‌احترامی", "زورگویی", "دروغ", "فحش دادن",
-    "تنها گذاشتن", "اذیت کردن", "آزار دادن", "شکستن",
-    "غیبت کردن", "بدگویی", "دزدی", "خشن بودن", "ترساندن",
-    "کشیدن مو", "تقلب", "بی‌ادبی", "قهر کردن", "جیغ زدن",
-    "پرت کردن", "لگد زدن", "گاز گرفتن", "تف کردن", "بی‌نظمی",
-    "چیز بد گفتن", "دروغ گفتن", "قانون شکنی", "بی احترامی"
-  ];
 
-  const winQuestions = [
-    "وقتی دوستت ناراحت است، چه کار خوبی می‌توانی بکنی؟",
-    "یک کلمه‌ی خوب که امروز یاد گرفتی چیست؟",
-    "چرا دعوا کردن باعث می‌شود دوستانت ناراحت شوند؟",
-    "چطور با کلمات خوب می‌توانیم دوستانمان را شاد کنیم؟"
-  ];
-
-  const firstPhaseColors = ['#FBBF24', '#4ADE80', '#3B82F6'];
-  const allColors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
-
-  // ====== گل‌ها ======
-  (function createFlowers() {
-    const container = document.getElementById('flowers');
-    const colors = ['#f472b6', '#fbbf24', '#ef4444', '#a78bfa', '#fb923c', '#ffffff'];
-    for (let i = 0; i < 40; i++) {
-      const f = document.createElement('div');
-      f.className = 'flower';
-      f.style.left = Math.random() * 100 + '%';
-      f.style.bottom = (Math.random() * 80) + '%';
-      f.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      f.style.animationDelay = (Math.random() * 3) + 's';
-      f.style.width = f.style.height = (4 + Math.random() * 5) + 'px';
-      container.appendChild(f);
-    }
-  })();
-
-  // ====== صداها ======
-  const winSound = new Audio('win.mp3');
-  const loseSound = new Audio('lose.mp3');
-  const startMusic = new Audio('start.mp3');
-
-  winSound.preload = 'auto';
-  loseSound.preload = 'auto';
-  startMusic.preload = 'auto';
-  startMusic.loop = true;
-  startMusic.volume = 0.7;
-
-  winSound.addEventListener('error', () => console.warn('⚠️ win.mp3 در دسترس نیست'));
-  loseSound.addEventListener('error', () => console.warn('⚠️ lose.mp3 در دسترس نیست'));
-  startMusic.addEventListener('error', () => console.warn('⚠️ start.mp3 در دسترس نیست'));
-
-  let audioCtx = null;
-  let audioUnlocked = false;
-
-  function getAudioContext() {
-      if (!audioCtx) {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          if (AudioContextClass) audioCtx = new AudioContextClass();
-      }
-      return audioCtx;
+  for (let i = 0; i < 40; i++) {
+    const f = document.createElement("div");
+    f.className = "flower";
+    f.style.left = Math.random() * 100 + "%";
+    f.style.bottom = Math.random() * 85 + "%";
+    f.style.background = randomItem(flowerColors);
+    flowers.appendChild(f);
   }
+}
 
-  function unlockAudio() {
-      if (audioUnlocked) return;
-      try {
-          const ctx = getAudioContext();
-          if (ctx) {
-              if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-              const buf = ctx.createBuffer(1, 1, 22050);
-              const src = ctx.createBufferSource();
-              src.buffer = buf;
-              src.connect(ctx.destination);
-              src.start(0);
-          }
-          audioUnlocked = true;
-      } catch (e) {
-          console.warn('unlockAudio error:', e);
-      }
-  }
+function ensureAudioContext() {
+  try {
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
 
-  document.addEventListener('pointerdown', unlockAudio);
-  document.addEventListener('touchstart', unlockAudio);
-  document.addEventListener('click', unlockAudio);
-  document.addEventListener('keydown', unlockAudio);
-
-  function playDefaultSound(type) {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-    const now = ctx.currentTime;
-    if (type === 'good') {
-        const osc = ctx.createOscillator(); const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-        gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1);
-    } else if (type === 'bad') {
-        const osc = ctx.createOscillator(); const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
-        gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3);
-    }
-  }
-
-  // ====== آهنگ شروع اصلاح شده ======
-  let startMusicStarted = false;
-  let startMusicPending = false;
-  let startMusicStopped = false;
-
-  function playStartMusic() {
-      if (startMusicStopped || startMusicStarted || startMusicPending) return;
-
-      startMusic.volume = 0.7;
-      startMusic.loop = true;
-      startMusicPending = true;
-
-      try {
-          const p = startMusic.play();
-          if (p && p.then) {
-              p.then(() => {
-                  startMusicPending = false;
-                  if (startMusicStopped) {
-                      startMusic.pause();
-                      startMusic.currentTime = 0;
-                      return;
-                  }
-                  startMusicStarted = true;
-                  console.log('آهنگ شروع پخش شد');
-              }).catch(err => {
-                  startMusicPending = false;
-                  console.log('پخش خودکار محدود شد:', err);
-              });
-          } else {
-              startMusicPending = false;
-              startMusicStarted = true;
-          }
-      } catch (e) {
-          startMusicPending = false;
-          console.warn('خطای آهنگ شروع:', e);
-      }
-  }
-
-  function stopStartMusic() {
-      startMusicStopped = true;
-      startMusicStarted = false;
-      startMusicPending = false;
-      try {
-          startMusic.pause();
-          startMusic.currentTime = 0;
-      } catch (e) {}
-  }
-
-  function playSoundFile(audio, fallbackType) {
-      if (!audio) { playDefaultSound(fallbackType); return; }
-      try {
-          audio.pause();
-          audio.currentTime = 0;
-          const p = audio.play();
-          if (p && p.catch) {
-              p.catch((err) => {
-                  console.warn('audio.play failed:', err);
-                  playDefaultSound(fallbackType);
-              });
-          }
-      } catch (e) {
-          console.warn('audio exception:', e);
-          playDefaultSound(fallbackType);
-      }
-  }
-
-  function startKeepAlive() {
-      if (keepAliveTimer) clearInterval(keepAliveTimer);
-      keepAliveTimer = setInterval(() => {
-          document.body.style.opacity = document.body.style.opacity === '0.999' ? '1' : '0.999';
-      }, 150);
-  }
-  function stopKeepAlive() {
-      if (keepAliveTimer) { clearInterval(keepAliveTimer); keepAliveTimer = null; }
-      document.body.style.opacity = '1';
-  }
-
-  function speak(text) {
-    if ('speechSynthesis' in window) {
-        try {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'fa-IR'; utterance.rate = 1.0; utterance.pitch = 1.1;
-            window.speechSynthesis.speak(utterance);
-        } catch(e) { console.warn('speak error:', e); }
-    }
-  }
-
-  function startConfettiBlast() {
-    let count = 0;
-    if (confettiInterval) clearInterval(confettiInterval);
-    confettiInterval = setInterval(() => {
-        for (let i = 0; i < 10; i++) {
-            createOneConfetti(window.innerWidth * 0.25);
-            createOneConfetti(window.innerWidth * 0.5);
-            createOneConfetti(window.innerWidth * 0.75);
-        }
-        count++;
-        if (count >= 80) {
-            clearInterval(confettiInterval);
-            confettiInterval = null;
-        }
-    }, 100);
-  }
-
-  function createOneConfetti(startX) {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.style.left = startX + 'px';
-      confetti.style.top = '50px';
-      confetti.style.backgroundColor = allColors[Math.floor(Math.random() * allColors.length)];
-      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-      const xMove = (Math.random() - 0.5) * window.innerWidth;
-      const duration = 2 + Math.random() * 1.5;
-      confetti.animate([
-          { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-          { transform: `translate(${xMove}px, 105vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-      ], {
-          duration: duration * 1000,
-          easing: 'cubic-bezier(.37,0,.63,1)',
-          fill: 'forwards'
-      });
-      canvas.appendChild(confetti);
-      setTimeout(() => confetti.remove(), duration * 1000 + 500);
-  }
-
-  function updateLivesUI() {
-    livesDisplay.innerHTML = '';
-    for(let i=0; i<3; i++) {
-      let span = document.createElement('span');
-      span.className = 'heart';
-      span.innerText = i < lives ? '❤️' : '🖤';
-      span.style.animationDelay = (i * 0.2) + 's';
-      livesDisplay.appendChild(span);
-    }
-  }
-
-  function startGame() {
-    unlockAudio();
-    stopStartMusic();
-    document.getElementById('screen-start').classList.remove('active');
-    score = 0; lives = 3;
-    updateLivesUI(); scoreDisplay.innerText = 'امتیاز: 0';
-    castleLineY = window.innerHeight - 120;
-    resetRound();
-  }
-
-  function resetRound() {
-    bubbles.forEach(b => b.element.remove()); bubbles = [];
-    timeLeft = 40; timeBar.style.width = '100%';
-    timeBar.style.background = 'linear-gradient(90deg, #10b981, #22c55e, #4ade80)';
-    bubbleSpawnTimer = 0; gameActive = true;
-    isFinalTenSeconds = false;
-    isInFirst20Seconds = true;
-    lastTime = performance.now();
-    if (animationId) cancelAnimationFrame(animationId);
-    gameLoop(lastTime);
-  }
-
-  function spawnBubble() {
-    const isGood = Math.random() > 0.55;
-    const word = isGood ? goodWords[Math.floor(Math.random() * goodWords.length)] : badWords[Math.floor(Math.random() * badWords.length)];
-    const size = 100 + Math.random() * 30;
-    const x = Math.random() * Math.max(0, window.innerWidth - size);
-
-    const el = document.createElement('div');
-    el.className = 'bubble';
-
-    let randomColor;
-    if (isInFirst20Seconds) {
-        randomColor = firstPhaseColors[Math.floor(Math.random() * firstPhaseColors.length)];
-    } else {
-        randomColor = allColors[Math.floor(Math.random() * allColors.length)];
-    }
-    el.style.background = `radial-gradient(circle at 30% 30%, ${randomColor}dd, ${randomColor})`;
-    el.style.border = '3px solid rgba(255,255,255,0.7)';
-
-    el.style.width = size + 'px'; el.style.height = size + 'px';
-    el.style.left = x + 'px'; el.style.top = '-150px';
-    el.innerText = word;
-    el.style.fontSize = Math.max(14, size / 5) + 'px';
-
-    let baseSpeed = 1.5 + Math.random() * 0.8;
-    if (isFinalTenSeconds) baseSpeed *= 0.85;
-
-    const bubble = { element: el, x: x, y: -150, size: size, speed: baseSpeed, isGood: isGood, isDead: false };
-
-    el.onpointerdown = (e) => {
-        e.preventDefault();
-        if (!gameActive || bubble.isDead) return;
-        bubble.isDead = true; el.remove();
-
-        if (isGood) {
-            score += 10; scoreDisplay.innerText = 'امتیاز: ' + score;
-            playDefaultSound('good');
-        } else {
-            lives--; updateLivesUI(); playDefaultSound('bad');
-            if (lives <= 0) endGame(false);
-        }
-        bubbles = bubbles.filter(b => b !== bubble);
-    };
-
-    canvas.appendChild(el); bubbles.push(bubble);
-  }
-
-  function gameLoop(timestamp) {
-    if (!gameActive) return;
-    const dt = (timestamp - lastTime) / 1000; lastTime = timestamp;
-    timeLeft -= dt; let percent = (timeLeft / 40) * 100;
-    if(percent < 0) percent = 0;
-    timeBar.style.width = percent + '%';
-
-    if (timeLeft <= 20 && isInFirst20Seconds) {
-        isInFirst20Seconds = false;
+    if (AudioContextClass && !audioContext) {
+      audioContext = new AudioContextClass();
     }
 
-    if (timeLeft <= 10 && !isFinalTenSeconds) {
-        isFinalTenSeconds = true;
-        timeBar.style.background = 'linear-gradient(90deg, #ef4444, #dc2626, #b91c1c)';
+    if (audioContext && audioContext.state === "suspended") {
+      audioContext.resume().catch(() => {});
     }
-
-    if (timeLeft <= 0) { endGame(true); return; }
-
-    bubbleSpawnTimer += dt;
-    if (bubbleSpawnTimer > 1.4) { spawnBubble(); bubbleSpawnTimer = 0; }
-
-    for (let i = bubbles.length - 1; i >= 0; i--) {
-        const b = bubbles[i];
-        if (b.isDead) continue;
-        b.y += b.speed * dt * 60;
-        b.element.style.top = b.y.toFixed(1) + 'px';
-
-        if (b.y + b.size > castleLineY) {
-            b.isDead = true; b.element.remove();
-            bubbles.splice(i, 1);
-            continue;
-        }
-    }
-    animationId = requestAnimationFrame(gameLoop);
+  } catch (e) {
+    console.warn("AudioContext unavailable", e);
   }
+}
 
-  function endGame(isTimeUp) {
-    gameActive = false;
-    if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+function unlockAudio() {
+  ensureAudioContext();
 
-    if (!isTimeUp) {
-        document.getElementById('delay-lose').classList.add('active');
-        startKeepAlive();
-        playSoundFile(loseSound, 'bad');
-        speak("دوباره تلاش کن قهرمان");
-
-        setTimeout(() => {
-            stopKeepAlive();
-            document.getElementById('delay-lose').classList.remove('active');
-            bubbles.forEach(b => b.element.remove()); bubbles = [];
-            document.getElementById('screen-lose').classList.add('active');
-        }, 5000);
-    } else {
-        document.getElementById('delay-win').classList.add('active');
-        startKeepAlive();
-        playSoundFile(winSound, 'good');
-        speak("آفرین قهرمان");
-        startConfettiBlast();
-
-        setTimeout(() => {
-            stopKeepAlive();
-            bubbles.forEach(b => b.element.remove()); bubbles = [];
-            document.getElementById('delay-win').classList.remove('active');
-
-            const screenWin = document.getElementById('screen-win');
-            screenWin.classList.add('active');
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('champion-box').classList.add('show');
-
-            const q = winQuestions[Math.floor(Math.random() * winQuestions.length)];
-            document.getElementById('win-question').innerText = q;
-        }, 8000);
-    }
-  }
-
-  function finishGame() {
-    if (window.Capacitor && window.Capacitor.Plugins.App) {
-        window.Capacitor.Plugins.App.exitApp();
-    } else {
-        alert("آفرین قهرمان! 🎉\nامتیاز تو: " + score);
-        location.reload();
-    }
-  }
-
-  // ====== راه‌اندازی اولیه اصلاح شده ======
-  window.addEventListener('load', () => {
-
-      // تلاش برای پخش خودکار در لحظه باز شدن برنامه
-      playStartMusic();
-
-      // تلاش مجدد هنگام اولین تعامل کاربر
-      const startAudioOnInteraction = () => {
-          if (startMusicStopped) return;
-          unlockAudio();
-          playStartMusic();
-      };
-
-      document.addEventListener(
-          'pointerdown',
-          startAudioOnInteraction,
-          { capture: true }
-      );
-
-      document.addEventListener(
-          'touchstart',
-          startAudioOnInteraction,
-          { capture: true }
-      );
-
-      document.addEventListener(
-          'keydown',
-          startAudioOnInteraction,
-          { capture: true }
-      );
-
-      // بررسی وجود تصویر
-      const startImage = document.getElementById('start-image');
-      startImage.addEventListener('error', () => {
-          console.warn('فایل icon-only.png پیدا نشد');
-      });
+  [startMusic, winAudio, loseAudio].forEach(audio => {
+    try {
+      audio.load();
+    } catch (_) {}
   });
+}
+
+function playStartMusic() {
+  startMusic.volume = 0.55;
+
+  if (!startMusic.paused) return;
+
+  try {
+    const result = startMusic.play();
+
+    if (result && result.catch) {
+      result.catch(error => {
+        console.warn(
+          "پخش خودکار موسیقی توسط مرورگر مسدود شد.",
+          error
+        );
+      });
+    }
+  } catch (e) {
+    console.warn("خطا در پخش موسیقی شروع", e);
+  }
+}
+
+function stopStartMusic() {
+  startMusic.pause();
+
+  try {
+    startMusic.currentTime = 0;
+  } catch (_) {}
+}
+
+function playFile(audio, fallbackType) {
+  try {
+    audio.currentTime = 0;
+    audio.volume = 0.8;
+
+    const result = audio.play();
+
+    if (result && result.catch) {
+      result.catch(() => playTone(fallbackType));
+    }
+  } catch (_) {
+    playTone(fallbackType);
+  }
+}
+
+function playTone(type) {
+  ensureAudioContext();
+
+  if (!audioContext) return;
+
+  try {
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    if (type === "good") {
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(450, now);
+      oscillator.frequency.exponentialRampToValueAtTime(850, now + 0.12);
+    } else {
+      oscillator.type = "sawtooth";
+      oscillator.frequency.setValueAtTime(160, now);
+      oscillator.frequency.exponentialRampToValueAtTime(60, now + 0.22);
+    }
+
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+    oscillator.start(now);
+    oscillator.stop(now + 0.26);
+  } catch (_) {}
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+
+  try {
+    speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "fa-IR";
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
+
+    speechSynthesis.speak(utterance);
+  } catch (_) {}
+}
+
+function updateLives() {
+  livesDisplay.textContent =
+    "❤️".repeat(Math.max(0, lives)) +
+    "🖤".repeat(Math.max(0, 3 - lives));
+}
+
+function clearBubbles() {
+  bubbles.forEach(b => b.element.remove());
+  bubbles = [];
+}
+
+function showOnlyScreen(screen) {
+  [startScreen, winScreen, loseScreen].forEach(s => {
+    s.classList.remove("active");
+  });
+
+  screen.classList.add("active");
+}
+
+function startGame() {
+  unlockAudio();
+  stopStartMusic();
+
+  if (endTimer) {
+    clearTimeout(endTimer);
+    endTimer = null;
+  }
+
+  if (confettiTimer) {
+    clearInterval(confettiTimer);
+    confettiTimer = null;
+  }
+
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  document.querySelectorAll(".confetti").forEach(el => el.remove());
+
+  winAudio.pause();
+  loseAudio.pause();
+
+  showOnlyScreen(startScreen);
+  startScreen.classList.remove("active");
+
+  score = 0;
+  lives = 3;
+  timeLeft = 40;
+  gameActive = false;
+
+  clearBubbles();
+
+  scoreDisplay.textContent = "امتیاز: ۰";
+  updateLives();
+
+  $("champion-box").classList.remove("show");
+
+  castleLineY = $("castle-container").getBoundingClientRect().top;
+
+  resetRound();
+}
+
+function resetRound() {
+  clearBubbles();
+
+  timeLeft = 40;
+  spawnTimer = 0;
+  firstPhase = true;
+  gameActive = true;
+
+  timeBar.style.width = "100%";
+  timeBar.style.background = "#22c55e";
+
+  castleLineY = $("castle-container").getBoundingClientRect().top;
+
+  lastTime = performance.now();
+
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
+  }
+
+  animationId = requestAnimationFrame(gameLoop);
+}
+
+function spawnBubble() {
+  const isGood = Math.random() > 0.45;
+  const word = randomItem(isGood ? goodWords : badWords);
+
+  const size = Math.min(
+    125,
+    Math.max(85, window.innerWidth * 0.25)
+  );
+
+  const maxX = Math.max(0, window.innerWidth - size);
+  const x = Math.random() * maxX;
+
+  const element = document.createElement("div");
+  element.className = "bubble";
+
+  const color = randomItem(
+    firstPhase
+      ? ["#FBBF24", "#4ADE80", "#3B82F6"]
+      : colors
+  );
+
+  element.style.background =
+    `radial-gradient(circle at 30% 25%, ${color}dd, ${color})`;
+
+  element.style.width = size + "px";
+  element.style.height = size + "px";
+  element.style.left = x + "px";
+  element.style.top = "-140px";
+  element.style.fontSize =
+    Math.max(13, Math.min(21, size / 5.2)) + "px";
+
+  element.textContent = word;
+
+  const bubble = {
+    element,
+    x,
+    y: -140,
+    size,
+    speed: 70 + Math.random() * 35,
+    isGood,
+    dead: false
+  };
+
+  element.addEventListener("pointerdown", event => {
+    event.preventDefault();
+
+    if (!gameActive || bubble.dead) return;
+
+    bubble.dead = true;
+    element.remove();
+
+    bubbles = bubbles.filter(b => b !== bubble);
+
+    if (isGood) {
+      score += 10;
+      scoreDisplay.textContent = "امتیاز: " + score;
+      playTone("good");
+    } else {
+      lives--;
+      updateLives();
+      playTone("bad");
+
+      if (lives <= 0) {
+        endGame(false);
+      }
+    }
+  });
+
+  gameContainer.appendChild(element);
+  bubbles.push(bubble);
+}
+
+function gameLoop(timestamp) {
+  if (!gameActive) {
+    animationId = null;
+    return;
+  }
+
+  const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+  lastTime = timestamp;
+
+  timeLeft -= dt;
+
+  const percent = Math.max(0, (timeLeft / 40) * 100);
+  timeBar.style.width = percent + "%";
+
+  if (timeLeft <= 20) firstPhase = false;
+
+  if (timeLeft <= 10) {
+    timeBar.style.background = "#ef4444";
+  }
+
+  if (timeLeft <= 0) {
+    endGame(true);
+    return;
+  }
+
+  spawnTimer += dt;
+
+  if (spawnTimer >= 1.15) {
+    spawnBubble();
+    spawnTimer = 0;
+  }
+
+  castleLineY = $("castle-container").getBoundingClientRect().top;
+
+  for (let i = bubbles.length - 1; i >= 0; i--) {
+    const b = bubbles[i];
+
+    if (b.dead) continue;
+
+    b.y += b.speed * dt;
+    b.element.style.top = b.y + "px";
+
+    if (b.y + b.size >= castleLineY) {
+      b.dead = true;
+      b.element.remove();
+      bubbles.splice(i, 1);
+    }
+  }
+
+  animationId = requestAnimationFrame(gameLoop);
+}
+
+function createConfetti() {
+  const element = document.createElement("div");
+  element.className = "confetti";
+  element.style.left = Math.random() * window.innerWidth + "px";
+  element.style.top = "-15px";
+  element.style.background = randomItem(colors);
+
+  gameContainer.appendChild(element);
+
+  const duration = 2000 + Math.random() * 2000;
+
+  const animation = element.animate([
+    { transform: "translateY(0) rotate(0deg)", opacity: 1 },
+    {
+      transform:
+        `translate(${Math.random() * 160 - 80}px, ${window.innerHeight + 50}px) rotate(700deg)`,
+      opacity: 0
+    }
+  ], {
+    duration,
+    easing: "ease-out"
+  });
+
+  animation.onfinish = () => element.remove();
+}
+
+function startConfetti() {
+  if (confettiTimer) clearInterval(confettiTimer);
+
+  confettiTimer = setInterval(() => {
+    for (let i = 0; i < 8; i++) createConfetti();
+  }, 150);
+}
+
+function endGame(won) {
+  if (!gameActive) return;
+
+  gameActive = false;
+
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  clearBubbles();
+
+  if (won) {
+    $("delay-win").classList.add("active");
+
+    playFile(winAudio, "good");
+    speak("آفرین قهرمان");
+
+    startConfetti();
+
+    endTimer = setTimeout(() => {
+      $("delay-win").classList.remove("active");
+
+      if (confettiTimer) {
+        clearInterval(confettiTimer);
+        confettiTimer = null;
+      }
+
+      document.querySelectorAll(".confetti").forEach(el => el.remove());
+
+      $("final-score").textContent = score;
+      $("champion-box").classList.add("show");
+      $("win-question").textContent = randomItem(winQuestions);
+
+      showOnlyScreen(winScreen);
+    }, 3500);
+
+  } else {
+    $("delay-lose").classList.add("active");
+
+    playFile(loseAudio, "bad");
+    speak("دوباره تلاش کن قهرمان");
+
+    endTimer = setTimeout(() => {
+      $("delay-lose").classList.remove("active");
+      showOnlyScreen(loseScreen);
+    }, 2500);
+  }
+}
+
+function finishGame() {
+  stopStartMusic();
+
+  if (window.Capacitor &&
+      window.Capacitor.Plugins &&
+      window.Capacitor.Plugins.App) {
+    window.Capacitor.Plugins.App.exitApp();
+  } else {
+    startGame();
+  }
+}
+
+/* دکمه‌ها */
+$("start-btn").addEventListener("click", startGame);
+$("restart-btn").addEventListener("click", startGame);
+$("finish-btn").addEventListener("click", finishGame);
+
+/*
+ * تلاش برای پخش موسیقی هنگام بارگذاری برنامه.
+ * اگر مرورگر یا WebView پخش خودکار را مسدود کند،
+ * با اولین لمس کاربر دوباره تلاش می‌کنیم.
+ */
+window.addEventListener("load", () => {
+  createFlowers();
+  updateLives();
+  playStartMusic();
+});
+
+/* سازگاری با محدودیت autoplay در Android و مرورگرها */
+function firstInteraction() {
+  unlockAudio();
+
+  if (startScreen.classList.contains("active")) {
+    playStartMusic();
+  }
+
+  document.removeEventListener("pointerdown", firstInteraction);
+  document.removeEventListener("touchstart", firstInteraction);
+  document.removeEventListener("keydown", firstInteraction);
+}
+
+document.addEventListener("pointerdown", firstInteraction);
+document.addEventListener("touchstart", firstInteraction, { passive: true });
+document.addEventListener("keydown", firstInteraction);
+
 </script>
 </body>
 </html>
