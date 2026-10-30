@@ -39,11 +39,11 @@
   .bubble { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; text-align: center; box-shadow: inset -8px -8px 20px rgba(0,0,0,0.25), 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 10; padding: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.4); line-height: 1.2; }
   
   /* کانفتی */
-  .confetti { position: absolute; width: 12px; height: 12px; z-index: 150; opacity: 0.9; top: -20px; }
+  .confetti { position: absolute; width: 12px; height: 12px; z-index: 150; opacity: 0.9; top: -20px; pointer-events: none; }
 
   /* صفحات پیام */
-  .screen { position: absolute; inset: 0; z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.95); color: white; text-align: center; padding: 20px; }
-  .screen.active { display: flex; }
+  .screen { position: absolute; inset: 0; z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.95); color: white; text-align: center; padding: 20px; opacity: 0; transition: opacity 0.5s; }
+  .screen.active { display: flex; opacity: 1; }
   .screen h1 { font-size: 36px; color: #FBBF24; margin-bottom: 15px; }
   .screen p { font-size: 20px; line-height: 1.6; max-width: 600px; margin-bottom: 25px; font-weight: 700; }
   .screen button { padding: 15px 40px; font-size: 24px; font-family: inherit; font-weight: 900; background: #10B981; color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 8px 0 #047857; transition: all 0.1s; }
@@ -51,6 +51,11 @@
 
   /* ورودی متن سوال */
   #answer-input { padding: 12px; font-size: 18px; border-radius: 10px; border: 2px solid #F59E0B; font-family: inherit; width: 80%; max-width: 400px; margin-bottom: 20px; text-align: center; }
+  
+  /* لایه نمایش پیام (تاخیر 5 ثانیه) */
+  .delay-message { position: absolute; inset: 0; z-index: 180; display: none; align-items: center; justify-content: center; flex-direction: column; background: rgba(0,0,0,0.6); color: white; text-align: center; }
+  .delay-message.active { display: flex; }
+  .delay-message h1 { font-size: 48px; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
 </style>
 </head>
 <body>
@@ -73,6 +78,18 @@
     </div>
   </div>
 
+  <!-- پیام برد (به تاخیر افتاده) -->
+  <div class="delay-message" id="delay-win">
+      <h1>🏆 آفرین قهرمان! 🏆</h1>
+      <p style="font-size:24px;">آماده باش برای جشن...</p>
+  </div>
+
+  <!-- پیام باخت (به تاخیر افتاده) -->
+  <div class="delay-message" id="delay-lose">
+      <h1>💔 قلعه سقوط کرد! 💔</h1>
+      <p style="font-size:24px;">اشکالی نداره قهرمان...</p>
+  </div>
+
   <div class="screen active" id="screen-start">
     <h1>🏰 قلعه فرهان و دوستانش 🏰</h1>
     <p>حباب‌های <span style="color:#4ADE80">سبز</span> (کلمات خوب) را لمس کنید تا امتیاز بگیرید.<br><b style="color:#F87171">اما حباب‌های قرمز (کلمات بد) را لمس نکنید!</b><br>اگر آن‌ها را لمس کنید، یک قلب از دست می‌دهید.<br><small>در ۱۰ ثانیه آخر، رنگ‌ها به ۱۰ رنگ مختلف تغییر می‌کنند! دقت کنید!</small></p>
@@ -80,11 +97,11 @@
   </div>
 
   <div class="screen" id="screen-win">
-    <h1>🏆 آفرین قهرمان! 🏆</h1>
-    <p>شما از قلعه محافظت کردید!<br>حالا به این سوال خوب جواب بده:</p>
+    <h1>🏆 جواب خوب بده قهرمان! 🏆</h1>
+    <p>به این سوال خوب جواب بده:</p>
     <input type="text" id="answer-input" placeholder="پاسخ خود را اینجا بنویسید...">
     <p id="win-question" style="color: #FBBF24;"></p>
-    <button onclick="finishGame()">پایان</button>
+    <button onclick="finishGame()">پایان و ثبت</button>
   </div>
 
   <div class="screen" id="screen-lose">
@@ -118,22 +135,21 @@
 
   const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
 
-  // ====== مدیریت صداها (فایل یا پیش‌فرض) ======
+  // ====== مدیریت صداها ======
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  
-  // تلاش برای لود فایل‌های صوتی کاربر
   const customSounds = {
       welcome: new Audio('welcome.mp3'),
       win: new Audio('win.mp3'),
       lose: new Audio('lose.mp3'),
       click: new Audio('click.mp3')
   };
+  customSounds.welcome.preload = 'auto'; customSounds.win.preload = 'auto';
+  customSounds.lose.preload = 'auto'; customSounds.click.preload = 'auto';
   
   function playCustomSound(key) {
       const audio = customSounds[key];
-      if (!audio) return;
-      // بررسی اینکه آیا فایل لود شده است
-      if (audio.error === null && audio.readyState >= 2) {
+      if (!audio || audio.error) return false;
+      if (audio.readyState >= 2) {
           audio.currentTime = 0;
           audio.play().catch(e => console.log("Audio play failed:", e));
           return true;
@@ -141,11 +157,9 @@
       return false;
   }
 
-  // صدای پیش‌فرض (اگر فایل صوتی موجود نبود)
   function playDefaultSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const now = audioCtx.currentTime;
-    
     if (type === 'good') { 
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
@@ -161,28 +175,19 @@
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'bandpass'; filter.frequency.value = 1000; filter.Q.value = 1;
+        const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1000; filter.Q.value = 1;
         const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.15, now + 0.5);
-        gain.gain.linearRampToValueAtTime(0.1, now + 2.5);
-        gain.gain.linearRampToValueAtTime(0, now + 3);
+        gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.15, now + 0.5);
+        gain.gain.linearRampToValueAtTime(0.1, now + 2.5); gain.gain.linearRampToValueAtTime(0, now + 3);
         noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
         noise.start(now);
-        
         const whistle = audioCtx.createOscillator(); const wGain = audioCtx.createGain();
         whistle.connect(wGain); wGain.connect(audioCtx.destination);
         whistle.type = 'sine'; whistle.frequency.setValueAtTime(2000, now);
-        whistle.frequency.linearRampToValueAtTime(2500, now + 0.5);
-        whistle.frequency.linearRampToValueAtTime(1800, now + 1);
-        whistle.frequency.linearRampToValueAtTime(2200, now + 1.5);
-        whistle.frequency.linearRampToValueAtTime(1500, now + 2.5);
-        wGain.gain.setValueAtTime(0, now);
-        wGain.gain.linearRampToValueAtTime(0.1, now + 0.3);
-        wGain.gain.linearRampToValueAtTime(0, now + 2.8);
+        whistle.frequency.linearRampToValueAtTime(2500, now + 0.5); whistle.frequency.linearRampToValueAtTime(1800, now + 1);
+        whistle.frequency.linearRampToValueAtTime(2200, now + 1.5); whistle.frequency.linearRampToValueAtTime(1500, now + 2.5);
+        wGain.gain.setValueAtTime(0, now); wGain.gain.linearRampToValueAtTime(0.1, now + 0.3); wGain.gain.linearRampToValueAtTime(0, now + 2.8);
         whistle.start(now); whistle.stop(now + 3);
     }
   }
@@ -191,9 +196,7 @@
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'fa-IR';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.1;
+        utterance.lang = 'fa-IR'; utterance.rate = 1.0; utterance.pitch = 1.1;
         window.speechSynthesis.speak(utterance);
     }
   }
@@ -204,7 +207,7 @@
     if (confettiInterval) clearInterval(confettiInterval);
     
     confettiInterval = setInterval(() => {
-        // هر 100 میلی‌ثانیه، 20 تا کاغذ رنگی جدید
+        // در هر 100 میلی ثانیه، 20 کاغذ رنگی از مرکز بالا
         for (let i = 0; i < 20; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
@@ -229,7 +232,7 @@
             setTimeout(() => confetti.remove(), duration * 1000 + 500);
         }
         count++;
-        if (count >= 50) { // 50 * 100ms = 5 ثانیه
+        if (count >= 50) { // 5 ثانیه (50 * 100ms)
             clearInterval(confettiInterval);
             confettiInterval = null;
         }
@@ -262,7 +265,6 @@
     const el = document.createElement('div');
     el.className = 'bubble';
     
-    // ==== منطق رنگ‌ها ====
     if (!isFinalTenSeconds) {
         el.style.background = isGood ? 'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)' : 'radial-gradient(circle at 30% 30%, #F87171, #DC2626)';
         el.style.border = isGood ? '3px solid #86EFAC' : '3px solid #FCA5A5';
@@ -276,11 +278,8 @@
     el.style.left = x + 'px'; el.style.top = '-150px';
     el.innerText = word; el.style.fontSize = (size / 5.5) + 'px';
 
-    // ==== کاهش جزئی سرعت در 10 ثانیه آخر ====
     let baseSpeed = 2.5 + Math.random() * 1.5;
-    if (isFinalTenSeconds) {
-        baseSpeed *= 0.8; // 20% کاهش سرعت
-    }
+    if (isFinalTenSeconds) baseSpeed *= 0.8;
 
     const bubble = { element: el, x: x, y: -150, size: size, speed: baseSpeed, isGood: isGood, isDead: false };
 
@@ -291,7 +290,6 @@
         
         if (isGood) {
             score += 10; scoreDisplay.innerText = 'امتیاز: ' + score; 
-            // پخش صدای کلیک سفارشی (اگر نبود، صدای پیش‌فرض)
             if (!playCustomSound('click')) playDefaultSound('good');
         } else {
             lives--; updateLivesUI(); playDefaultSound('bad');
@@ -335,31 +333,38 @@
   }
 
   function endGame(isTimeUp) {
+    // ==== فریز کامل بازی ====
     gameActive = false; 
     if (animationId) cancelAnimationFrame(animationId);
-    bubbles.forEach(b => b.element.remove()); 
-    bubbles = [];
+    // حباب‌ها پاک نمی‌شوند تا صفحه فریز شده بماند!
     
     if (!isTimeUp) {
-        // باخت: مکث 5 ثانیه‌ای
+        // ==== باخت: 5 ثانیه فریز و بعد پیام ====
+        document.getElementById('delay-lose').classList.add('active');
+        if (!playCustomSound('lose')) speak("دوباره تلاش کن قهرمان");
+        
         setTimeout(() => {
+            document.getElementById('delay-lose').classList.remove('active');
+            // پاک کردن حباب‌ها قبل از نمایش پیام نهایی
+            bubbles.forEach(b => b.element.remove()); bubbles = [];
             document.getElementById('screen-lose').classList.add('active');
-            if (!playCustomSound('lose')) {
-                speak("دوباره تلاش کن قهرمان");
-            }
         }, 5000);
     } else {
-        // برد
-        document.getElementById('screen-win').classList.add('active');
-        currentWinQuestion = winQuestions[Math.floor(Math.random() * winQuestions.length)];
-        document.getElementById('win-question').innerText = currentWinQuestion;
+        // ==== برد: جشن 5 ثانیه روی صحنه فریز شده ====
+        document.getElementById('delay-win').classList.add('active');
+        if (!playCustomSound('win')) playDefaultSound('cheer');
         
-        // پخش فایل صوتی تشویق (اگر موجود باشد) یا صدای پیش‌فرض
-        if (!playCustomSound('win')) {
-            playDefaultSound('cheer');
-        }
+        startConfettiBlast(); // انفجار کاغذهای رنگی برای 5 ثانیه
         
-        startConfettiBlast(); // کانفتی برای 5 ثانیه
+        setTimeout(() => {
+            document.getElementById('delay-win').classList.remove('active');
+            // پاک کردن حباب‌ها قبل از نمایش کادر سوال
+            bubbles.forEach(b => b.element.remove()); bubbles = [];
+            
+            document.getElementById('screen-win').classList.add('active');
+            currentWinQuestion = winQuestions[Math.floor(Math.random() * winQuestions.length)];
+            document.getElementById('win-question').innerText = currentWinQuestion;
+        }, 5000);
     }
   }
 
