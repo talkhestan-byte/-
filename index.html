@@ -53,8 +53,8 @@
   #answer-input { padding: 12px; font-size: 18px; border-radius: 10px; border: 2px solid #F59E0B; font-family: inherit; width: 80%; max-width: 400px; margin-bottom: 20px; text-align: center; }
   
   /* لایه نمایش پیام (تاخیر 5 ثانیه) */
-  .delay-message { position: absolute; inset: 0; z-index: 180; display: none; align-items: center; justify-content: center; flex-direction: column; background: rgba(0,0,0,0.6); color: white; text-align: center; }
-  .delay-message.active { display: flex; }
+  .delay-message { position: absolute; inset: 0; z-index: 180; display: none; align-items: center; justify-content: center; flex-direction: column; background: rgba(0,0,0,0.4); color: white; text-align: center; opacity: 0; transition: opacity 1s; }
+  .delay-message.active { display: flex; opacity: 1; }
   .delay-message h1 { font-size: 48px; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
 </style>
 </head>
@@ -81,18 +81,16 @@
   <!-- پیام برد (به تاخیر افتاده) -->
   <div class="delay-message" id="delay-win">
       <h1>🏆 آفرین قهرمان! 🏆</h1>
-      <p style="font-size:24px;">آماده باش برای جشن...</p>
   </div>
 
   <!-- پیام باخت (به تاخیر افتاده) -->
   <div class="delay-message" id="delay-lose">
       <h1>💔 قلعه سقوط کرد! 💔</h1>
-      <p style="font-size:24px;">اشکالی نداره قهرمان...</p>
   </div>
 
   <div class="screen active" id="screen-start">
     <h1>🏰 قلعه فرهان و دوستانش 🏰</h1>
-    <p>حباب‌های <span style="color:#4ADE80">سبز</span> (کلمات خوب) را لمس کنید تا امتیاز بگیرید.<br><b style="color:#F87171">اما حباب‌های قرمز (کلمات بد) را لمس نکنید!</b><br>اگر آن‌ها را لمس کنید، یک قلب از دست می‌دهید.<br><small>در ۱۰ ثانیه آخر، رنگ‌ها به ۱۰ رنگ مختلف تغییر می‌کنند! دقت کنید!</small></p>
+    <p>حباب‌های <span style="color:#4ADE80">سبز</span>، <span style="color:#3B82F6">آبی</span> و <span style="color:#FBBF24">زرد</span> (کلمات خوب) را لمس کنید تا امتیاز بگیرید.<br><b style="color:#F87171">اما حباب‌های قرمز (کلمات بد) را لمس نکنید!</b><br>اگر آن‌ها را لمس کنید، یک قلب از دست می‌دهید.<br><small>در ۱۰ ثانیه آخر، رنگ‌ها به ۱۰ رنگ مختلف تغییر می‌کنند! دقت کنید!</small></p>
     <button onclick="startGame()">شروع بازی</button>
   </div>
 
@@ -201,42 +199,51 @@
     }
   }
 
-  // ====== افکت کانفتی ۵ ثانیه‌ای ======
+  // ====== افکت کانفتی ۸ ثانیه‌ای از 3 نقطه ======
   function startConfettiBlast() {
     let count = 0;
     if (confettiInterval) clearInterval(confettiInterval);
     
     confettiInterval = setInterval(() => {
-        // در هر 100 میلی ثانیه، 20 کاغذ رنگی از مرکز بالا
-        for (let i = 0; i < 20; i++) {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = (window.innerWidth / 2) + 'px';
-            confetti.style.top = '50px';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-            
-            const xMove = (Math.random() - 0.5) * window.innerWidth * 1.5;
-            const duration = 2 + Math.random() * 1.5;
-            
-            confetti.animate([
-                { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-                { transform: `translate(${xMove}px, 105vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-            ], {
-                duration: duration * 1000,
-                easing: 'cubic-bezier(.37,0,.63,1)',
-                fill: 'forwards'
-            });
-            
-            canvas.appendChild(confetti);
-            setTimeout(() => confetti.remove(), duration * 1000 + 500);
+        // در هر 100 میلی ثانیه، 30 کاغذ رنگی از 3 نقطه
+        for (let i = 0; i < 10; i++) {
+            // نقطه 1: چپ (25%)
+            createOneConfetti(window.innerWidth * 0.25);
+            // نقطه 2: وسط (50%)
+            createOneConfetti(window.innerWidth * 0.5);
+            // نقطه 3: راست (75%)
+            createOneConfetti(window.innerWidth * 0.75);
         }
         count++;
-        if (count >= 50) { // 5 ثانیه (50 * 100ms)
+        if (count >= 80) { // 8 ثانیه (80 * 100ms)
             clearInterval(confettiInterval);
             confettiInterval = null;
         }
     }, 100);
+  }
+
+  function createOneConfetti(startX) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = startX + 'px';
+      confetti.style.top = '50px';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      
+      const xMove = (Math.random() - 0.5) * window.innerWidth;
+      const duration = 2 + Math.random() * 1.5;
+      
+      confetti.animate([
+          { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(${xMove}px, 105vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+      ], {
+          duration: duration * 1000,
+          easing: 'cubic-bezier(.37,0,.63,1)',
+          fill: 'forwards'
+      });
+      
+      canvas.appendChild(confetti);
+      setTimeout(() => confetti.remove(), duration * 1000 + 500);
   }
 
   function updateLivesUI() { livesDisplay.innerHTML = ''; for(let i=0; i<3; i++) { let span = document.createElement('span'); span.className = 'heart'; span.innerText = i < lives ? '❤️' : '🖤'; livesDisplay.appendChild(span); } }
@@ -265,10 +272,24 @@
     const el = document.createElement('div');
     el.className = 'bubble';
     
+    // ==== منطق رنگ‌ها (3 رنگ برای خوب، قرمز برای بد) ====
     if (!isFinalTenSeconds) {
-        el.style.background = isGood ? 'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)' : 'radial-gradient(circle at 30% 30%, #F87171, #DC2626)';
-        el.style.border = isGood ? '3px solid #86EFAC' : '3px solid #FCA5A5';
+        if (isGood) {
+            // انتخاب تصادفی از 3 رنگ خوب
+            const goodColors = [
+                'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)', // سبز
+                'radial-gradient(circle at 30% 30%, #60A5FA, #2563EB)', // آبی
+                'radial-gradient(circle at 30% 30%, #FBBF24, #D97706)'  // زرد
+            ];
+            el.style.background = goodColors[Math.floor(Math.random() * goodColors.length)];
+            el.style.border = '3px solid rgba(255,255,255,0.6)';
+        } else {
+            // قرمز برای کلمات بد
+            el.style.background = 'radial-gradient(circle at 30% 30%, #F87171, #DC2626)';
+            el.style.border = '3px solid #FCA5A5';
+        }
     } else {
+        // 10 ثانیه آخر: همه رنگ‌ها تصادفی
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
         el.style.background = randomColor;
         el.style.border = '3px solid rgba(255,255,255,0.5)';
@@ -336,35 +357,33 @@
     // ==== فریز کامل بازی ====
     gameActive = false; 
     if (animationId) cancelAnimationFrame(animationId);
-    // حباب‌ها پاک نمی‌شوند تا صفحه فریز شده بماند!
     
     if (!isTimeUp) {
-        // ==== باخت: 5 ثانیه فریز و بعد پیام ====
+        // باخت: 5 ثانیه فریز و بعد پیام
         document.getElementById('delay-lose').classList.add('active');
         if (!playCustomSound('lose')) speak("دوباره تلاش کن قهرمان");
         
         setTimeout(() => {
             document.getElementById('delay-lose').classList.remove('active');
-            // پاک کردن حباب‌ها قبل از نمایش پیام نهایی
             bubbles.forEach(b => b.element.remove()); bubbles = [];
             document.getElementById('screen-lose').classList.add('active');
         }, 5000);
     } else {
-        // ==== برد: جشن 5 ثانیه روی صحنه فریز شده ====
+        // برد: فریز و جشن 8 ثانیه‌ای
         document.getElementById('delay-win').classList.add('active');
         if (!playCustomSound('win')) playDefaultSound('cheer');
         
-        startConfettiBlast(); // انفجار کاغذهای رنگی برای 5 ثانیه
+        startConfettiBlast(); // کانفتی 8 ثانیه از 3 نقطه
         
+        // پیام برد در ثانیه 5 تا 8 (3 ثانیه آخر) ظاهر می‌شود
         setTimeout(() => {
-            document.getElementById('delay-win').classList.remove('active');
-            // پاک کردن حباب‌ها قبل از نمایش کادر سوال
             bubbles.forEach(b => b.element.remove()); bubbles = [];
+            document.getElementById('delay-win').classList.remove('active');
             
             document.getElementById('screen-win').classList.add('active');
             currentWinQuestion = winQuestions[Math.floor(Math.random() * winQuestions.length)];
             document.getElementById('win-question').innerText = currentWinQuestion;
-        }, 5000);
+        }, 8000); // 8 ثانیه بعد از شروع جشن
     }
   }
 
@@ -385,7 +404,7 @@
   window.addEventListener('load', () => {
     setTimeout(() => {
         if (!playCustomSound('welcome')) {
-            speak("بچه های گلم خوش اومدین به بازی ما");
+            speak("خوش آمدید");
         }
     }, 1000);
   });
