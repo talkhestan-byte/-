@@ -131,57 +131,39 @@
   ];
   let currentWinQuestion = "";
 
-  const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
-  
-  // رنگ‌های کلمات بد (همیشه تیره و خطرناک)
-  const badColors = [
-      'radial-gradient(circle at 30% 30%, #DC2626, #991B1B)', // قرمز
-      'radial-gradient(circle at 30% 30%, #9F1239, #4C0519)', // زرشکی
-      'radial-gradient(circle at 30% 30%, #7C2D12, #431407)', // قهوه‌ای
-      'radial-gradient(circle at 30% 30%, #3F3F46, #18181B)', // خاکستری تیره
-      'radial-gradient(circle at 30% 30%, #C2410C, #7C2D12)'  // نارنجی تیره
-  ];
+  // 10 رنگ مختلف
+  const allColors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
 
   // ====== مدیریت صداها ======
-  const customSounds = {
-      win: new Audio('win.mp3'),
-      lose: new Audio('lose.mp3')
-  };
-  customSounds.win.preload = 'auto';
-  customSounds.lose.preload = 'auto';
-  
-  // ====== رفع مشکل پخش صدا در اندروید (Unlock Audio) ======
-  function unlockAudio() {
-      customSounds.win.volume = 0.01;
-      customSounds.lose.volume = 0.01;
+  const winSound = new Audio('win.mp3');
+  const loseSound = new Audio('lose.mp3');
+  winSound.preload = 'auto';
+  loseSound.preload = 'auto';
+
+  // ترفند قطعی برای باز کردن قفل صدا در اندروید
+  function unlockAudioForAndroid() {
+      // تنظیم صدا روی بی‌صدا
+      winSound.volume = 0;
+      loseSound.volume = 0;
       
-      const p1 = customSounds.win.play();
-      const p2 = customSounds.lose.play();
+      // تلاش برای پخش
+      const playWin = winSound.play();
+      const playLose = loseSound.play();
       
-      Promise.all([p1, p2]).then(() => {
-          customSounds.win.pause(); customSounds.lose.pause();
-          customSounds.win.currentTime = 0; customSounds.lose.currentTime = 0;
-          customSounds.win.volume = 1.0; customSounds.lose.volume = 1.0;
-      }).catch(e => {
-          // اگر پخش نشد، تنظیمات را به حالت قبل برگردان
-          customSounds.win.volume = 1.0; customSounds.lose.volume = 1.0;
+      Promise.all([playWin, playLose]).then(() => {
+          // اگر پخش شروع شد، فوراً متوقفش کن
+          winSound.pause(); loseSound.pause();
+          winSound.currentTime = 0; loseSound.currentTime = 0;
+          // بازگرداندن صدا به حالت عادی برای استفاده‌های بعدی
+          winSound.volume = 1.0; loseSound.volume = 1.0;
+      }).catch(error => {
+          // در صورت خطا، فقط صدا را به حالت عادی برمی‌گردانیم
+          winSound.volume = 1.0; loseSound.volume = 1.0;
+          console.log("Unlock audio attempted but browser rejected:", error);
       });
   }
 
-  function playCustomSound(key) {
-      const audio = customSounds[key];
-      if (!audio || audio.error) return false;
-      if (audio.readyState >= 2) {
-          audio.currentTime = 0;
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-              playPromise.catch(e => console.log("Audio play failed:", e));
-          }
-          return true;
-      }
-      return false;
-  }
-
+  // صداهای پیش‌فرض برای لمس حباب
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playDefaultSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -231,7 +213,7 @@
       confetti.className = 'confetti';
       confetti.style.left = startX + 'px';
       confetti.style.top = '50px';
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.backgroundColor = allColors[Math.floor(Math.random() * allColors.length)];
       confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
       
       const xMove = (Math.random() - 0.5) * window.innerWidth;
@@ -253,8 +235,8 @@
   function updateLivesUI() { livesDisplay.innerHTML = ''; for(let i=0; i<3; i++) { let span = document.createElement('span'); span.className = 'heart'; span.innerText = i < lives ? '❤️' : '🖤'; livesDisplay.appendChild(span); } }
 
   function startGame() {
-    // باز کردن قفل صدا در اولین کلیک کاربر
-    unlockAudio();
+    // این خط حیاتی است: قفل صدا را باز می‌کند
+    unlockAudioForAndroid();
     
     document.getElementById('screen-start').classList.remove('active');
     score = 0; lives = 3;
@@ -279,26 +261,10 @@
     const el = document.createElement('div');
     el.className = 'bubble';
     
-    if (!isFinalTenSeconds) {
-        if (isGood) {
-            // کلمات خوب: 3 رنگ شاد
-            const goodColors = [
-                'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)',
-                'radial-gradient(circle at 30% 30%, #60A5FA, #2563EB)',
-                'radial-gradient(circle at 30% 30%, #FBBF24, #D97706)'
-            ];
-            el.style.background = goodColors[Math.floor(Math.random() * goodColors.length)];
-            el.style.border = '3px solid rgba(255,255,255,0.6)';
-        } else {
-            // کلمات بد: حالا تصادفی از بین رنگ‌های تیره
-            el.style.background = badColors[Math.floor(Math.random() * badColors.length)];
-            el.style.border = '3px solid rgba(0,0,0,0.3)';
-        }
-    } else {
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        el.style.background = randomColor;
-        el.style.border = '3px solid rgba(255,255,255,0.5)';
-    }
+    // رنگ‌بندی جدید: هم برای خوب و هم بد، از تمام 10 رنگ استفاده می‌شود
+    const randomColor = allColors[Math.floor(Math.random() * allColors.length)];
+    el.style.background = randomColor;
+    el.style.border = '3px solid rgba(255,255,255,0.6)';
 
     el.style.width = size + 'px'; el.style.height = size + 'px';
     el.style.left = x + 'px'; el.style.top = '-150px';
@@ -366,7 +332,11 @@
         document.getElementById('delay-lose').classList.add('active');
         
         // پخش صدای باخت
-        if (!playCustomSound('lose')) speak("دوباره تلاش کن قهرمان");
+        loseSound.currentTime = 0;
+        loseSound.play().catch(e => {
+            console.log("Lose sound failed, falling back to TTS");
+            speak("دوباره تلاش کن قهرمان");
+        });
         
         setTimeout(() => {
             document.getElementById('delay-lose').classList.remove('active');
@@ -377,7 +347,11 @@
         document.getElementById('delay-win').classList.add('active');
         
         // پخش صدای برد
-        if (!playCustomSound('win')) speak("آفرین قهرمان");
+        winSound.currentTime = 0;
+        winSound.play().catch(e => {
+            console.log("Win sound failed, falling back to TTS");
+            speak("آفرین قهرمان");
+        });
         
         startConfettiBlast();
         
