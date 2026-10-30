@@ -132,8 +132,17 @@
   let currentWinQuestion = "";
 
   const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
+  
+  // رنگ‌های کلمات بد (همیشه تیره و خطرناک)
+  const badColors = [
+      'radial-gradient(circle at 30% 30%, #DC2626, #991B1B)', // قرمز
+      'radial-gradient(circle at 30% 30%, #9F1239, #4C0519)', // زرشکی
+      'radial-gradient(circle at 30% 30%, #7C2D12, #431407)', // قهوه‌ای
+      'radial-gradient(circle at 30% 30%, #3F3F46, #18181B)', // خاکستری تیره
+      'radial-gradient(circle at 30% 30%, #C2410C, #7C2D12)'  // نارنجی تیره
+  ];
 
-  // ====== مدیریت صداها (فقط فایل‌های صوتی برای برد و باخت) ======
+  // ====== مدیریت صداها ======
   const customSounds = {
       win: new Audio('win.mp3'),
       lose: new Audio('lose.mp3')
@@ -141,18 +150,38 @@
   customSounds.win.preload = 'auto';
   customSounds.lose.preload = 'auto';
   
+  // ====== رفع مشکل پخش صدا در اندروید (Unlock Audio) ======
+  function unlockAudio() {
+      customSounds.win.volume = 0.01;
+      customSounds.lose.volume = 0.01;
+      
+      const p1 = customSounds.win.play();
+      const p2 = customSounds.lose.play();
+      
+      Promise.all([p1, p2]).then(() => {
+          customSounds.win.pause(); customSounds.lose.pause();
+          customSounds.win.currentTime = 0; customSounds.lose.currentTime = 0;
+          customSounds.win.volume = 1.0; customSounds.lose.volume = 1.0;
+      }).catch(e => {
+          // اگر پخش نشد، تنظیمات را به حالت قبل برگردان
+          customSounds.win.volume = 1.0; customSounds.lose.volume = 1.0;
+      });
+  }
+
   function playCustomSound(key) {
       const audio = customSounds[key];
       if (!audio || audio.error) return false;
       if (audio.readyState >= 2) {
           audio.currentTime = 0;
-          audio.play().catch(e => console.log("Audio play failed:", e));
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+              playPromise.catch(e => console.log("Audio play failed:", e));
+          }
           return true;
       }
       return false;
   }
 
-  // صدای پیش‌فرض برای لمس حباب‌ها (اگر صداهای کلیک را نداشتید)
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playDefaultSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -224,6 +253,9 @@
   function updateLivesUI() { livesDisplay.innerHTML = ''; for(let i=0; i<3; i++) { let span = document.createElement('span'); span.className = 'heart'; span.innerText = i < lives ? '❤️' : '🖤'; livesDisplay.appendChild(span); } }
 
   function startGame() {
+    // باز کردن قفل صدا در اولین کلیک کاربر
+    unlockAudio();
+    
     document.getElementById('screen-start').classList.remove('active');
     score = 0; lives = 3;
     updateLivesUI(); scoreDisplay.innerText = 'امتیاز: 0';
@@ -249,6 +281,7 @@
     
     if (!isFinalTenSeconds) {
         if (isGood) {
+            // کلمات خوب: 3 رنگ شاد
             const goodColors = [
                 'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)',
                 'radial-gradient(circle at 30% 30%, #60A5FA, #2563EB)',
@@ -257,8 +290,9 @@
             el.style.background = goodColors[Math.floor(Math.random() * goodColors.length)];
             el.style.border = '3px solid rgba(255,255,255,0.6)';
         } else {
-            el.style.background = 'radial-gradient(circle at 30% 30%, #F87171, #DC2626)';
-            el.style.border = '3px solid #FCA5A5';
+            // کلمات بد: حالا تصادفی از بین رنگ‌های تیره
+            el.style.background = badColors[Math.floor(Math.random() * badColors.length)];
+            el.style.border = '3px solid rgba(0,0,0,0.3)';
         }
     } else {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -331,10 +365,8 @@
     if (!isTimeUp) {
         document.getElementById('delay-lose').classList.add('active');
         
-        // پخش صدای باخت (lose.mp3)
-        if (!playCustomSound('lose')) {
-            speak("دوباره تلاش کن قهرمان");
-        }
+        // پخش صدای باخت
+        if (!playCustomSound('lose')) speak("دوباره تلاش کن قهرمان");
         
         setTimeout(() => {
             document.getElementById('delay-lose').classList.remove('active');
@@ -344,11 +376,8 @@
     } else {
         document.getElementById('delay-win').classList.add('active');
         
-        // پخش صدای برد (win.mp3)
-        if (!playCustomSound('win')) {
-            // اگر فایل win.mp3 نبود، از این صدا استفاده کن
-            speak("آفرین قهرمان");
-        }
+        // پخش صدای برد
+        if (!playCustomSound('win')) speak("آفرین قهرمان");
         
         startConfettiBlast();
         
