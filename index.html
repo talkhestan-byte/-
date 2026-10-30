@@ -6,120 +6,54 @@
 <title>قلعه فرهان و دوستانش</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;900&display=swap');
-  
   * { box-sizing: border-box; user-select: none; }
-  body {
-    margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh;
-    font-family: 'Vazirmatn', Tahoma, sans-serif; touch-action: none;
-    background: linear-gradient(180deg, #4ADE80 0%, #22C55E 25%, #0284C7 60%, #0F172A 100%);
-  }
+  body { margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh; font-family: 'Vazirmatn', Tahoma, sans-serif; touch-action: none; background: linear-gradient(180deg, #4ADE80 0%, #22C55E 25%, #0284C7 60%, #0F172A 100%); }
+  #game-container { position: relative; width: 100%; height: 100%; overflow: hidden; }
   
-  #game-container {
-    position: relative; width: 100%; height: 100%; overflow: hidden;
-  }
-
-  /* پس‌زمینه شاد */
-  .bg-sun {
-    position: absolute; top: 40px; right: 30px; width: 120px; height: 120px;
-    background: radial-gradient(circle, #FEF08A, #FDE047, transparent);
-    border-radius: 50%; box-shadow: 0 0 60px #FDE047; z-index: 0;
-  }
-  .bg-cloud {
-    position: absolute; background: rgba(255,255,255,0.6); border-radius: 50px;
-    z-index: 0; animation: floatCloud 25s linear infinite;
-  }
-  .bg-cloud::before, .bg-cloud::after {
-    content: ''; position: absolute; background: rgba(255,255,255,0.6); border-radius: 50%;
-  }
+  /* پس زمینه */
+  .bg-sun { position: absolute; top: 40px; right: 30px; width: 120px; height: 120px; background: radial-gradient(circle, #FEF08A, #FDE047, transparent); border-radius: 50%; box-shadow: 0 0 60px #FDE047; z-index: 0; }
+  .bg-cloud { position: absolute; background: rgba(255,255,255,0.6); border-radius: 50px; z-index: 0; animation: floatCloud 25s linear infinite; }
+  .bg-cloud::before, .bg-cloud::after { content: ''; position: absolute; background: rgba(255,255,255,0.6); border-radius: 50%; }
   .bg-cloud::before { width: 50%; height: 150%; top: -50%; left: 10%; }
   .bg-cloud::after { width: 60%; height: 200%; top: -100%; right: 10%; }
   .bg-cloud1 { width: 100px; height: 40px; top: 100px; left: -100px; animation-duration: 30s; }
   .bg-cloud2 { width: 140px; height: 50px; top: 250px; left: -150px; animation-duration: 40s; animation-delay: 5s; }
-  .bg-cloud3 { width: 80px; height: 35px; top: 400px; left: -100px; animation-duration: 35s; animation-delay: 12s; }
-  @keyframes floatCloud {
-    from { transform: translateX(0); }
-    to { transform: translateX(calc(100vw + 200px)); }
-  }
-  .bg-star {
-    position: absolute; color: #FDE047; font-size: 14px; z-index: 0;
-    animation: twinkle 3s infinite alternate;
-  }
-  @keyframes twinkle {
-    from { opacity: 0.2; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1.2); }
-  }
+  @keyframes floatCloud { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 200px)); } }
 
   /* هدر */
-  #header {
-    position: absolute; top: 0; left: 0; right: 0; padding: 12px 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
-    font-size: 20px; font-weight: 900; color: #1E293B; z-index: 100;
-    border-bottom: 4px solid #F59E0B;
-  }
+  #header { position: absolute; top: 0; left: 0; right: 0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); font-size: 20px; font-weight: 900; color: #1E293B; z-index: 100; border-bottom: 4px solid #F59E0B; }
   .heart { color: #EF4444; font-size: 26px; margin-left: 3px; }
-  
-  #time-bar-container {
-    position: absolute; top: 62px; left: 0; width: 100%; height: 10px; background: #E2E8F0; z-index: 100;
-  }
+  #time-bar-container { position: absolute; top: 62px; left: 0; width: 100%; height: 10px; background: #E2E8F0; z-index: 100; }
   #time-bar { height: 100%; width: 100%; background: #F59E0B; transition: width 0.1s linear; }
 
   /* قلعه */
-  #castle-container {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 160px; height: 120px; z-index: 50;
-  }
-  .castle {
-    width: 100%; height: 100%; background: linear-gradient(180deg, #8B5CF6, #6D28D9);
-    border-radius: 15px 15px 0 0; position: relative;
-    box-shadow: inset -10px -10px 0 rgba(0,0,0,0.15);
-  }
-  .castle::before, .castle::after {
-    content: ''; position: absolute; top: -22px; width: 35px; height: 35px;
-    background: #8B5CF6; border-radius: 8px 8px 0 0;
-  }
-  .castle::before { left: 8px; }
-  .castle::after { right: 8px; }
-  .door {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 45px; height: 60px; background: #1E1B4B; border-radius: 20px 20px 0 0;
-    border: 3px solid #A78BFA;
-  }
-  .flag {
-    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-    width: 4px; height: 40px; background: #1E1B4B;
-  }
-  .flag::after {
-    content: '⭐'; position: absolute; top: -5px; left: 4px; font-size: 24px;
-  }
+  #castle-container { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 160px; height: 120px; z-index: 50; }
+  .castle { width: 100%; height: 100%; background: linear-gradient(180deg, #8B5CF6, #6D28D9); border-radius: 15px 15px 0 0; position: relative; box-shadow: inset -10px -10px 0 rgba(0,0,0,0.15); }
+  .castle::before, .castle::after { content: ''; position: absolute; top: -22px; width: 35px; height: 35px; background: #8B5CF6; border-radius: 8px 8px 0 0; }
+  .castle::before { left: 8px; } .castle::after { right: 8px; }
+  .door { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 45px; height: 60px; background: #1E1B4B; border-radius: 20px 20px 0 0; border: 3px solid #A78BFA; }
+  .flag { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 4px; height: 40px; background: #1E1B4B; }
+  .flag::after { content: '⭐'; position: absolute; top: -5px; left: 4px; font-size: 24px; }
 
   /* حباب‌ها */
-  .bubble {
-    position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 900; font-size: 20px; text-align: center;
-    box-shadow: inset -8px -8px 20px rgba(0,0,0,0.25), 0 8px 20px rgba(0,0,0,0.2);
-    cursor: pointer; z-index: 10; padding: 10px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4); line-height: 1.2;
-  }
+  .bubble { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; text-align: center; box-shadow: inset -8px -8px 20px rgba(0,0,0,0.25), 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 10; padding: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.4); line-height: 1.2; }
   .bubble.good { background: radial-gradient(circle at 30% 30%, #4ADE80, #16A34A); border: 3px solid #86EFAC; }
   .bubble.bad { background: radial-gradient(circle at 30% 30%, #F87171, #DC2626); border: 3px solid #FCA5A5; }
 
-  /* صفحات پیام */
-  .screen {
-    position: absolute; inset: 0; z-index: 200; display: none;
-    flex-direction: column; align-items: center; justify-content: center;
-    background: rgba(15, 23, 42, 0.95); color: white; text-align: center; padding: 20px;
+  /* کانفتی */
+  .confetti { position: absolute; width: 10px; height: 10px; z-index: 150; opacity: 0.9; top: -20px; }
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
   }
+
+  /* صفحات پیام */
+  .screen { position: absolute; inset: 0; z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.95); color: white; text-align: center; padding: 20px; }
   .screen.active { display: flex; }
   .screen h1 { font-size: 36px; color: #FBBF24; margin-bottom: 15px; }
   .screen p { font-size: 20px; line-height: 1.6; max-width: 600px; margin-bottom: 25px; font-weight: 700; }
-  .screen button {
-    padding: 15px 40px; font-size: 24px; font-family: inherit; font-weight: 900;
-    background: #10B981; color: white; border: none; border-radius: 15px;
-    cursor: pointer; box-shadow: 0 8px 0 #047857; transition: all 0.1s;
-  }
+  .screen button { padding: 15px 40px; font-size: 24px; font-family: inherit; font-weight: 900; background: #10B981; color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 8px 0 #047857; transition: all 0.1s; }
   .screen button:active { transform: translateY(4px); box-shadow: 0 4px 0 #047857; }
-
 </style>
 </head>
 <body>
@@ -128,7 +62,6 @@
   <div class="bg-sun"></div>
   <div class="bg-cloud bg-cloud1"></div>
   <div class="bg-cloud bg-cloud2"></div>
-  <div class="bg-cloud bg-cloud3"></div>
 
   <div id="header">
     <div id="score-display">امتیاز: 0</div>
@@ -145,7 +78,7 @@
 
   <div class="screen active" id="screen-start">
     <h1>🏰 قلعه فرهان و دوستانش 🏰</h1>
-    <p>سلام قهرمان‌ها! حباب‌های <span style="color:#4ADE80">سبز</span> (کلمات خوب) را لمس کنید تا به قلعه برسند.<br>مراقب حباب‌های <span style="color:#F87171">قرمز</span> (کلمات بد) باشید و آن‌ها را لمس نکنید!</p>
+    <p>حباب‌های <span style="color:#4ADE80">سبز</span> (کلمات خوب) را لمس کنید تا امتیاز بگیرید.<br><b style="color:#F87171">اما حباب‌های قرمز (کلمات بد) را لمس نکنید!</b><br>اگر آن‌ها را لمس کنید، یک قلب از دست می‌دهید.</p>
     <button onclick="startGame()">شروع بازی</button>
   </div>
 
@@ -168,18 +101,11 @@
   const livesDisplay = document.getElementById('lives-display');
   const timeBar = document.getElementById('time-bar');
   
-  let score = 0;
-  let lives = 3;
-  let timeLeft = 40; 
-  let gameActive = false;
-  let bubbles = [];
-  let animationId;
-  let lastTime = 0;
-  let bubbleSpawnTimer = 0;
-  let castleLineY = 0;
+  let score = 0; let lives = 3; let timeLeft = 40; let gameActive = false;
+  let bubbles = []; let animationId; let lastTime = 0; let bubbleSpawnTimer = 0; let castleLineY = 0;
 
-  const goodWords = ["مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام", "بغل کردن", "گوش دادن", "همدلی", "فداکاری"];
-  const badWords = ["فحش", "کتک زدن", "مسخره", "احمق", "دعوا", "هل دادن", "داد زدن", "بی‌احترامی"];
+  const goodWords = ["مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام", "همدلی", "فداکاری"];
+  const badWords = ["فحش", "کتک زدن", "مسخره", "احمق", "دعوا", "هل دادن", "داد زدن"];
   const discussQuestions = [
     "اگر کسی در کلاس کلمه‌ی بدی بگوید، ما چه کار می‌توانیم بکنیم؟",
     "چرا رفتار خشونت‌آمیز باعث می‌شود دوستانمان ناراحت شوند؟",
@@ -187,83 +113,92 @@
   ];
   let currentDiscussIndex = 0;
 
+  // ====== سیستم صوتی ======
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination); const now = audioCtx.currentTime;
     
-    if (type === 'pop_good') {
-      osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
-      gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-      osc.start(now); osc.stop(now + 0.1);
-    } else if (type === 'pop_bad') {
-      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
-      gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-      osc.start(now); osc.stop(now + 0.2);
+    if (type === 'good') { 
+        osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1); 
+        gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); 
+    } else if (type === 'bad') { 
+        // صدای ناراحتی و اشتباه
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.3); 
+        gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); 
     } else if (type === 'win') {
-      osc.type = 'square'; osc.frequency.setValueAtTime(400, now); 
-      osc.frequency.setValueAtTime(600, now+0.1); osc.frequency.setValueAtTime(800, now+0.2); osc.frequency.setValueAtTime(1000, now+0.3);
-      gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
-      osc.start(now); osc.stop(now + 0.4);
+        osc.type = 'square'; osc.frequency.setValueAtTime(400, now); 
+        osc.frequency.setValueAtTime(600, now+0.1); osc.frequency.setValueAtTime(800, now+0.2); osc.frequency.setValueAtTime(1000, now+0.3);
+        gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+        osc.start(now); osc.stop(now + 0.5);
     }
   }
 
-  function updateLivesUI() {
-    livesDisplay.innerHTML = '';
-    for(let i=0; i<3; i++) {
-        let span = document.createElement('span');
-        span.className = 'heart';
-        span.innerText = i < lives ? '❤️' : '🖤';
-        livesDisplay.appendChild(span);
+  // ====== سیستم گوینده (متن به گفتار) ======
+  function speak(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fa-IR';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.1;
+        window.speechSynthesis.speak(utterance);
     }
   }
 
-  function createRandomStars() {
-    for(let i=0; i<15; i++) {
-        let star = document.createElement('div');
-        star.className = 'bg-star';
-        star.innerText = '✦';
-        star.style.left = Math.random() * 100 + 'vw';
-        star.style.top = (Math.random() * 60 + 40) + 'vh';
-        star.style.animationDelay = Math.random() * 3 + 's';
-        canvas.appendChild(star);
+  // ====== افکت کانفتی ======
+  function shootConfetti() {
+    const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
+    for (let i = 0; i < 80; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = (window.innerWidth / 2) + 'px';
+        confetti.style.top = '-20px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        
+        const xMove = (Math.random() - 0.5) * window.innerWidth;
+        const duration = 2 + Math.random() * 2;
+        
+        confetti.animate([
+            { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+            { transform: `translate(${xMove}px, 105vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+        ], {
+            duration: duration * 1000,
+            easing: 'cubic-bezier(.37,0,.63,1)'
+        });
+        
+        canvas.appendChild(confetti);
+        setTimeout(() => confetti.remove(), duration * 1000);
     }
   }
+
+  function updateLivesUI() { livesDisplay.innerHTML = ''; for(let i=0; i<3; i++) { let span = document.createElement('span'); span.className = 'heart'; span.innerText = i < lives ? '❤️' : '🖤'; livesDisplay.appendChild(span); } }
 
   function startGame() {
     document.getElementById('screen-start').classList.remove('active');
     score = 0; lives = 3; currentDiscussIndex = 0;
     updateLivesUI(); scoreDisplay.innerText = 'امتیاز: 0';
     castleLineY = window.innerHeight - 120; 
-    createRandomStars();
     resetRound();
   }
 
   function resetRound() {
-    bubbles.forEach(b => b.element.remove());
-    bubbles = [];
-    timeLeft = 40; timeBar.style.width = '100%'; timeBar.style.background = '#F59E0B';
-    bubbleSpawnTimer = 0; gameActive = true;
-    lastTime = performance.now();
-    if (animationId) cancelAnimationFrame(animationId);
-    gameLoop(lastTime);
+    bubbles.forEach(b => b.element.remove()); bubbles = [];
+    timeLeft = 40; timeBar.style.width = '100%'; bubbleSpawnTimer = 0; gameActive = true;
+    lastTime = performance.now(); if (animationId) cancelAnimationFrame(animationId); gameLoop(lastTime);
   }
 
   function nextRound() {
     document.getElementById('screen-discuss').classList.remove('active');
-    currentDiscussIndex = (currentDiscussIndex + 1) % discussQuestions.length;
-    resetRound();
+    currentDiscussIndex = (currentDiscussIndex + 1) % discussQuestions.length; resetRound();
   }
 
   function spawnBubble() {
-    const isGood = Math.random() > 0.35; 
+    const isGood = Math.random() > 0.5;
     const word = isGood ? goodWords[Math.floor(Math.random() * goodWords.length)] : badWords[Math.floor(Math.random() * badWords.length)];
-    
-    const size = 85 + Math.random() * 25;
-    const x = Math.random() * (window.innerWidth - size);
+    const size = 85 + Math.random() * 25; const x = Math.random() * (window.innerWidth - size);
     
     const el = document.createElement('div');
     el.className = 'bubble ' + (isGood ? 'good' : 'bad');
@@ -271,106 +206,79 @@
     el.style.left = x + 'px'; el.style.top = '-150px';
     el.innerText = word; el.style.fontSize = (size / 5.5) + 'px';
 
-    const bubble = {
-        element: el, x: x, y: -150, size: size,
-        speed: 2.5 + Math.random() * 1.5, // سرعت مناسب: 2.5 تا 4
-        isGood: isGood,
-        isDead: false // متغیر طلایی برای جلوگیری از تکرار
-    };
+    const bubble = { element: el, x: x, y: -150, size: size, speed: 2.5 + Math.random() * 1.5, isGood: isGood, isDead: false };
 
     el.onpointerdown = (e) => {
         e.preventDefault();
-        // اگر مرده بود، کاری نکن
         if (!gameActive || bubble.isDead) return;
-        
-        bubble.isDead = true; 
-        el.remove(); // فوراً از صفحه حذف شود
+        bubble.isDead = true; el.remove(); 
         
         if (isGood) {
-            score += 10;
-            scoreDisplay.innerText = 'امتیاز: ' + score;
-            playSound('pop_good');
+            score += 10; scoreDisplay.innerText = 'امتیاز: ' + score; playSound('good');
         } else {
-            lives--;
-            updateLivesUI();
-            playSound('pop_bad');
+            lives--; updateLivesUI(); playSound('bad');
             if (lives <= 0) endGame(false);
         }
-        // حذف از آرایه
         bubbles = bubbles.filter(b => b !== bubble);
     };
 
-    canvas.appendChild(el);
-    bubbles.push(bubble);
+    canvas.appendChild(el); bubbles.push(bubble);
   }
 
   function gameLoop(timestamp) {
     if (!gameActive) return;
-    const dt = (timestamp - lastTime) / 1000;
-    lastTime = timestamp;
-
-    timeLeft -= dt;
-    let percent = (timeLeft / 40) * 100;
+    const dt = (timestamp - lastTime) / 1000; lastTime = timestamp;
+    timeLeft -= dt; let percent = (timeLeft / 40) * 100;
     if(percent < 0) percent = 0;
     timeBar.style.width = percent + '%';
-    if(percent < 20) timeBar.style.background = '#EF4444';
-
-    if (timeLeft <= 0) {
-        endGame(true);
-        return;
-    }
+    if (timeLeft <= 0) { endGame(true); return; }
 
     bubbleSpawnTimer += dt;
-    if (bubbleSpawnTimer > 1.2) { 
-        spawnBubble();
-        bubbleSpawnTimer = 0;
-    }
+    if (bubbleSpawnTimer > 1.2) { spawnBubble(); bubbleSpawnTimer = 0; }
 
     for (let i = bubbles.length - 1; i >= 0; i--) {
         const b = bubbles[i];
-        
-        // اگر حباب مرده یا لمس شده، کاملاً نادیده گرفته شود
         if (b.isDead) continue; 
+        b.y += b.speed * dt * 60; b.element.style.top = b.y + 'px';
 
-        b.y += b.speed * dt * 60; 
-        b.element.style.top = b.y + 'px';
-
-        // برخورد با قلعه
         if (b.y + b.size > castleLineY) {
-            b.isDead = true;
-            b.element.remove();
-            
-            if (!b.isGood) {
-                lives--;
-                updateLivesUI();
-                playSound('pop_bad');
-                if (lives <= 0) endGame(false);
-            }
+            b.isDead = true; b.element.remove();
             bubbles.splice(i, 1);
             continue;
         }
     }
-
     animationId = requestAnimationFrame(gameLoop);
   }
 
   function endGame(isTimeUp) {
-    gameActive = false;
-    if (animationId) cancelAnimationFrame(animationId);
-    bubbles.forEach(b => b.element.remove());
-    bubbles = [];
-
+    gameActive = false; if (animationId) cancelAnimationFrame(animationId);
+    bubbles.forEach(b => b.element.remove()); bubbles = [];
+    
     if (!isTimeUp) {
+        // باخت
         document.getElementById('end-title').innerText = '💔 قلعه سقوط کرد!';
         document.getElementById('end-title').style.color = '#EF4444';
         document.getElementById('end-text').innerText = 'اشکالی نداره قهرمان! دوباره تلاش کن.';
         document.getElementById('screen-end').classList.add('active');
+        
+        // گوینده در زمان باخت
+        setTimeout(() => speak("دوباره تلاش کن قهرمان"), 500);
     } else {
+        // برد (پایان زمان)
         playSound('win');
+        shootConfetti(); // افکت کانفتی
         document.getElementById('screen-discuss').classList.add('active');
         document.getElementById('discuss-text').innerText = discussQuestions[currentDiscussIndex];
+        
+        // گوینده در زمان برد
+        setTimeout(() => speak("آفرین قهرمان"), 500);
     }
   }
+
+  // خوش‌آمدگویی در زمان لود شدن صفحه
+  window.addEventListener('load', () => {
+    setTimeout(() => speak("بچه های گلم خوش اومدین به بازی ما"), 1000);
+  });
 </script>
 </body>
 </html>
