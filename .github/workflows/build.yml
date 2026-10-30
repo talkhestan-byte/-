@@ -33,7 +33,7 @@ jobs:
           # کپی کردن فایل‌های صوتی به پوشه www
           cp win.mp3 www/ || true
           cp lose.mp3 www/ || true
-          
+
           npm init -y
           npm install @capacitor/core@6 @capacitor/android@6
           npm install --save-dev @capacitor/cli@6
@@ -42,14 +42,25 @@ jobs:
         run: |
           npx cap init "Farhan Castle" com.yourname.farhancastle --web-dir www
           npx cap add android
-          
+
           # 1. اجبار برنامه به حالت عمودی (Portrait)
           sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
-          
+
           # 2. اجازه دسترسی به منابع محلی (حل مشکل پخش صدا)
           sed -i 's/<application/<application android:usesCleartextTraffic="true"/' android/app/src/main/AndroidManifest.xml
-          
+
           npx cap sync android
+
+      # ===== مراحل تولید آیکون =====
+      - name: Install Capacitor Assets
+        run: npm install --save-dev @capacitor/assets
+
+      - name: Generate App Icons
+        run: npx capacitor-assets generate --android
+
+      - name: Sync Assets to Android
+        run: npx cap sync android
+      # ==================================
 
       - name: Build Debug APK
         run: |
@@ -70,7 +81,7 @@ jobs:
       - name: Sign APK
         run: |
           BUILD_TOOLS_PATH=$(find $ANDROID_HOME/build-tools -name "apksigner" -type f | head -n 1)
-          
+
           $BUILD_TOOLS_PATH sign --ks my-release-key.jks \
             --ks-pass pass:Kabab123! \
             --key-pass pass:Kabab123! \
