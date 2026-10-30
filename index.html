@@ -90,7 +90,7 @@
 
   <div class="screen active" id="screen-start">
     <h1>🏰 قلعه فرهان و دوستانش 🏰</h1>
-    <p>حباب‌های <span style="color:#4ADE80">سبز</span>، <span style="color:#3B82F6">آبی</span> و <span style="color:#FBBF24">زرد</span> (کلمات خوب) را لمس کنید تا امتیاز بگیرید.<br><b style="color:#F87171">اما حباب‌های قرمز (کلمات بد) را لمس نکنید!</b><br>اگر آن‌ها را لمس کنید، یک قلب از دست می‌دهید.<br><small>در ۱۰ ثانیه آخر، رنگ‌ها به ۱۰ رنگ مختلف تغییر می‌کنند! دقت کنید!</small></p>
+    <p>حباب‌های <span style="color:#4ADE80">سبز</span>، <span style="color:#3B82F6">آبی</span> و <span style="color:#FBBF24">زرد</span> (کلمات خوب) را لمس کنید تا امتیاز بگیرید.<br><b style="color:#F87171">اما حباب‌های قرمز (کلمات بد) را لمس نکنید!</b><br>اگر آن‌ها را لمس کنید، یک قلب از دست می‌دهید.</p>
     <button onclick="startGame()">شروع بازی</button>
   </div>
 
@@ -205,17 +205,13 @@
     if (confettiInterval) clearInterval(confettiInterval);
     
     confettiInterval = setInterval(() => {
-        // در هر 100 میلی ثانیه، 30 کاغذ رنگی از 3 نقطه
         for (let i = 0; i < 10; i++) {
-            // نقطه 1: چپ (25%)
             createOneConfetti(window.innerWidth * 0.25);
-            // نقطه 2: وسط (50%)
             createOneConfetti(window.innerWidth * 0.5);
-            // نقطه 3: راست (75%)
             createOneConfetti(window.innerWidth * 0.75);
         }
         count++;
-        if (count >= 80) { // 8 ثانیه (80 * 100ms)
+        if (count >= 80) { // 8 ثانیه
             clearInterval(confettiInterval);
             confettiInterval = null;
         }
@@ -272,24 +268,20 @@
     const el = document.createElement('div');
     el.className = 'bubble';
     
-    // ==== منطق رنگ‌ها (3 رنگ برای خوب، قرمز برای بد) ====
     if (!isFinalTenSeconds) {
         if (isGood) {
-            // انتخاب تصادفی از 3 رنگ خوب
             const goodColors = [
-                'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)', // سبز
-                'radial-gradient(circle at 30% 30%, #60A5FA, #2563EB)', // آبی
-                'radial-gradient(circle at 30% 30%, #FBBF24, #D97706)'  // زرد
+                'radial-gradient(circle at 30% 30%, #4ADE80, #16A34A)',
+                'radial-gradient(circle at 30% 30%, #60A5FA, #2563EB)',
+                'radial-gradient(circle at 30% 30%, #FBBF24, #D97706)'
             ];
             el.style.background = goodColors[Math.floor(Math.random() * goodColors.length)];
             el.style.border = '3px solid rgba(255,255,255,0.6)';
         } else {
-            // قرمز برای کلمات بد
             el.style.background = 'radial-gradient(circle at 30% 30%, #F87171, #DC2626)';
             el.style.border = '3px solid #FCA5A5';
         }
     } else {
-        // 10 ثانیه آخر: همه رنگ‌ها تصادفی
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
         el.style.background = randomColor;
         el.style.border = '3px solid rgba(255,255,255,0.5)';
@@ -354,12 +346,10 @@
   }
 
   function endGame(isTimeUp) {
-    // ==== فریز کامل بازی ====
     gameActive = false; 
     if (animationId) cancelAnimationFrame(animationId);
     
     if (!isTimeUp) {
-        // باخت: 5 ثانیه فریز و بعد پیام
         document.getElementById('delay-lose').classList.add('active');
         if (!playCustomSound('lose')) speak("دوباره تلاش کن قهرمان");
         
@@ -369,13 +359,11 @@
             document.getElementById('screen-lose').classList.add('active');
         }, 5000);
     } else {
-        // برد: فریز و جشن 8 ثانیه‌ای
         document.getElementById('delay-win').classList.add('active');
         if (!playCustomSound('win')) playDefaultSound('cheer');
         
-        startConfettiBlast(); // کانفتی 8 ثانیه از 3 نقطه
+        startConfettiBlast();
         
-        // پیام برد در ثانیه 5 تا 8 (3 ثانیه آخر) ظاهر می‌شود
         setTimeout(() => {
             bubbles.forEach(b => b.element.remove()); bubbles = [];
             document.getElementById('delay-win').classList.remove('active');
@@ -383,7 +371,7 @@
             document.getElementById('screen-win').classList.add('active');
             currentWinQuestion = winQuestions[Math.floor(Math.random() * winQuestions.length)];
             document.getElementById('win-question').innerText = currentWinQuestion;
-        }, 8000); // 8 ثانیه بعد از شروع جشن
+        }, 8000);
     }
   }
 
