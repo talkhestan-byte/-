@@ -2,113 +2,151 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>قلعه فرهان و دوستانش</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;900&display=swap');
   
   * { box-sizing: border-box; user-select: none; }
   body {
-    margin: 0; padding: 0; background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
-    font-family: 'Vazirmatn', Tahoma, sans-serif; overflow: hidden; width: 100vw; height: 100vh;
-    touch-action: none;
+    margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh;
+    font-family: 'Vazirmatn', Tahoma, sans-serif; touch-action: none;
+    background: linear-gradient(180deg, #4ADE80 0%, #22C55E 30%, #0284C7 70%, #0F172A 100%);
   }
   
   #game-container {
     position: relative; width: 100%; height: 100%; overflow: hidden;
-    display: flex; flex-direction: column;
   }
 
-  /* هدر بازی (امتیاز و زمان) */
-  #header {
-    position: absolute; top: 0; left: 0; right: 0; padding: 15px 30px;
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255,255,255,0.6); backdrop-filter: blur(5px);
-    font-size: 24px; font-weight: 900; color: #1E293B; z-index: 100;
-    border-bottom: 4px solid #CBD5E1;
+  /* ==== پس‌زمینه شاد و متحرک ==== */
+  .bg-sun {
+    position: absolute; top: 40px; right: 30px; width: 120px; height: 120px;
+    background: radial-gradient(circle, #FEF08A, #FDE047, transparent);
+    border-radius: 50%; box-shadow: 0 0 60px #FDE047; z-index: 0;
   }
-  .heart { color: #EF4444; font-size: 30px; margin-left: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+  .bg-cloud {
+    position: absolute; background: rgba(255,255,255,0.7); border-radius: 50px;
+    z-index: 0; animation: floatCloud 20s linear infinite;
+  }
+  .bg-cloud::before, .bg-cloud::after {
+    content: ''; position: absolute; background: rgba(255,255,255,0.7); border-radius: 50%;
+  }
+  .bg-cloud::before { width: 50%; height: 150%; top: -50%; left: 10%; }
+  .bg-cloud::after { width: 60%; height: 200%; top: -100%; right: 10%; }
+  .bg-cloud1 { width: 100px; height: 40px; top: 100px; left: -100px; animation-duration: 25s; }
+  .bg-cloud2 { width: 140px; height: 50px; top: 250px; left: -150px; animation-duration: 35s; animation-delay: 5s; }
+  .bg-cloud3 { width: 80px; height: 35px; top: 400px; left: -100px; animation-duration: 30s; animation-delay: 10s; }
+  @keyframes floatCloud {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(100vw + 200px)); }
+  }
+  .bg-star {
+    position: absolute; color: #FDE047; font-size: 12px; z-index: 0;
+    animation: twinkle 3s infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.2; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* ==== هدر (امتیاز و قلب‌ها) ==== */
+  #header {
+    position: absolute; top: 0; left: 0; right: 0; padding: 15px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
+    font-size: 20px; font-weight: 900; color: #1E293B; z-index: 100;
+    border-bottom: 4px solid #F59E0B; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .heart { color: #EF4444; font-size: 26px; margin-left: 3px; }
   
   /* نوار زمان */
   #time-bar-container {
-    position: absolute; top: 75px; left: 0; width: 100%; height: 15px; background: #E2E8F0; z-index: 100;
+    position: absolute; top: 68px; left: 0; width: 100%; height: 12px; background: #E2E8F0; z-index: 100;
   }
   #time-bar { height: 100%; width: 100%; background: #F59E0B; transition: width 0.1s linear; }
 
-  /* قلعه پایین صفحه */
+  /* ==== قلعه ==== */
   #castle-container {
     position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 200px; height: 150px; z-index: 50; display: flex; justify-content: center; align-items: flex-end;
+    width: 160px; height: 130px; z-index: 50;
   }
   .castle {
-    width: 160px; height: 120px; background: #8B5CF6; border-radius: 10px 10px 0 0;
-    position: relative; box-shadow: inset -10px -10px 0 rgba(0,0,0,0.1);
+    width: 100%; height: 100%; background: linear-gradient(180deg, #8B5CF6, #6D28D9);
+    border-radius: 15px 15px 0 0; position: relative;
+    box-shadow: inset -10px -10px 0 rgba(0,0,0,0.15), 0 -5px 15px rgba(0,0,0,0.2);
   }
   .castle::before, .castle::after {
-    content: ''; position: absolute; top: -30px; width: 40px; height: 40px;
-    background: #8B5CF6; border-radius: 10px 10px 0 0;
+    content: ''; position: absolute; top: -25px; width: 35px; height: 35px;
+    background: #8B5CF6; border-radius: 8px 8px 0 0;
   }
-  .castle::before { left: 10px; }
-  .castle::after { right: 10px; }
+  .castle::before { left: 8px; }
+  .castle::after { right: 8px; }
   .door {
     position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 50px; height: 70px; background: #4C1D95; border-radius: 25px 25px 0 0;
+    width: 45px; height: 65px; background: #1E1B4B; border-radius: 20px 20px 0 0;
+    border: 3px solid #A78BFA;
   }
   .flag {
-    position: absolute; top: -70px; left: 50%; transform: translateX(-50%);
-    width: 5px; height: 40px; background: #333;
+    position: absolute; top: -65px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 40px; background: #1E1B4B;
   }
   .flag::after {
-    content: '⭐'; position: absolute; top: 0; left: 5px; font-size: 24px;
+    content: '⭐'; position: absolute; top: -5px; left: 4px; font-size: 26px;
+    animation: flagWave 1s infinite alternate;
   }
+  @keyframes flagWave { from { transform: scale(1); } to { transform: scale(1.2) rotate(5deg); } }
 
-  /* حباب‌ها */
+  /* ==== حباب‌ها ==== */
   .bubble {
     position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     color: white; font-weight: 900; font-size: 20px; text-align: center;
-    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: inset -8px -8px 20px rgba(0,0,0,0.25), 0 8px 20px rgba(0,0,0,0.2);
     cursor: pointer; transition: transform 0.1s; z-index: 10; padding: 10px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3); line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4); line-height: 1.2;
+    animation: bubbleFloat 2s ease-in-out infinite alternate;
   }
-  .bubble.good { background: radial-gradient(circle at 30% 30%, #4ADE80, #22C55E, #16A34A); border: 3px solid #86EFAC; }
-  .bubble.bad { background: radial-gradient(circle at 30% 30%, #F87171, #EF4444, #DC2626); border: 3px solid #FCA5A5; }
+  @keyframes bubbleFloat {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+  }
+  .bubble.good { background: radial-gradient(circle at 30% 30%, #4ADE80, #16A34A); border: 3px solid #86EFAC; }
+  .bubble.bad { background: radial-gradient(circle at 30% 30%, #F87171, #DC2626); border: 3px solid #FCA5A5; }
   .bubble:active { transform: scale(0.9); }
 
-  /* ذرات انفجار حباب */
-  .particle {
-    position: absolute; border-radius: 50%; pointer-events: none; z-index: 20;
-  }
-
-  /* صفحات پیام (شروع، بحث، پایان) */
+  /* صفحات پیام */
   .screen {
     position: absolute; inset: 0; z-index: 200; display: none;
     flex-direction: column; align-items: center; justify-content: center;
-    background: rgba(15, 23, 42, 0.9); color: white; text-align: center; padding: 20px;
+    background: rgba(15, 23, 42, 0.92); color: white; text-align: center; padding: 20px;
     backdrop-filter: blur(10px);
   }
   .screen.active { display: flex; }
-  .screen h1 { font-size: 50px; color: #FBBF24; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-  .screen p { font-size: 28px; line-height: 1.6; max-width: 800px; margin-bottom: 30px; font-weight: 700; }
+  .screen h1 { font-size: 36px; color: #FBBF24; margin-bottom: 15px; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+  .screen p { font-size: 20px; line-height: 1.6; max-width: 600px; margin-bottom: 25px; font-weight: 700; }
   .screen button {
-    padding: 20px 50px; font-size: 30px; font-family: inherit; font-weight: 900;
-    background: #10B981; color: white; border: none; border-radius: 20px;
-    cursor: pointer; box-shadow: 0 10px 0 #047857; transition: transform 0.1s, box-shadow 0.1s;
+    padding: 15px 40px; font-size: 24px; font-family: inherit; font-weight: 900;
+    background: #10B981; color: white; border: none; border-radius: 15px;
+    cursor: pointer; box-shadow: 0 8px 0 #047857; transition: all 0.1s;
   }
-  .screen button:active { transform: translateY(5px); box-shadow: 0 5px 0 #047857; }
+  .screen button:active { transform: translateY(4px); box-shadow: 0 4px 0 #047857; }
 
 </style>
 </head>
 <body>
 
 <div id="game-container">
-  <!-- هدر -->
+  <!-- پس زمینه شاد -->
+  <div class="bg-sun"></div>
+  <div class="bg-cloud bg-cloud1"></div>
+  <div class="bg-cloud bg-cloud2"></div>
+  <div class="bg-cloud bg-cloud3"></div>
+
   <div id="header">
     <div id="score-display">امتیاز: 0</div>
     <div id="lives-display"></div>
   </div>
   <div id="time-bar-container"><div id="time-bar"></div></div>
 
-  <!-- قلعه -->
   <div id="castle-container">
     <div class="castle">
       <div class="flag"></div>
@@ -116,21 +154,18 @@
     </div>
   </div>
 
-  <!-- صفحه شروع -->
   <div class="screen active" id="screen-start">
     <h1>🏰 قلعه فرهان و دوستانش 🏰</h1>
-    <p>سلام قهرمان‌ها! حباب‌های سبز (کلمات خوب) را لمس کنید تا به قلعه برسند.<br>مراقب حباب‌های قرمز (کلمات بد) باشید و آن‌ها را لمس نکنید!</p>
+    <p>سلام قهرمان‌ها! حباب‌های <span style="color:#4ADE80">سبز</span> (کلمات خوب) را لمس کنید تا به قلعه برسند.<br>مراقب حباب‌های <span style="color:#F87171">قرمز</span> (کلمات بد) باشید و آن‌ها را لمس نکنید!</p>
     <button onclick="startGame()">شروع بازی</button>
   </div>
 
-  <!-- صفحه بحث کلاسی (بین مراحل) -->
   <div class="screen" id="screen-discuss">
     <h1>💡 یک سوال برای کلاس</h1>
     <p id="discuss-text">اگر کسی در کلاس کلمه‌ی بدی بگوید، ما چه کار می‌توانیم بکنیم؟</p>
     <button onclick="nextRound()">ادامه بازی</button>
   </div>
 
-  <!-- صفحه پایان -->
   <div class="screen" id="screen-end">
     <h1 id="end-title">🎉 آفرین! 🎉</h1>
     <p id="end-text">شما از قلعه محافظت کردید!</p>
@@ -146,14 +181,15 @@
   
   let score = 0;
   let lives = 3;
-  let timeLeft = 30; // هر مرحله 30 ثانیه
+  let timeLeft = 40; 
   let gameActive = false;
   let bubbles = [];
   let animationId;
   let lastTime = 0;
   let bubbleSpawnTimer = 0;
+  let castleLineY = 0; // مرز بالای قلعه
 
-  const goodWords = ["مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام", "بغل کردن", "گوش دادن"];
+  const goodWords = ["مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام", "بغل کردن", "گوش دادن", "همدلی"];
   const badWords = ["فحش", "کتک زدن", "مسخره", "احمق", "دعوا", "هل دادن", "داد زدن"];
   const discussQuestions = [
     "اگر کسی در کلاس کلمه‌ی بدی بگوید، ما چه کار می‌توانیم بکنیم؟",
@@ -162,7 +198,6 @@
   ];
   let currentDiscussIndex = 0;
 
-  // ====== سیستم صوتی داخلی ======
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -197,20 +232,37 @@
     }
   }
 
+  function createRandomStars() {
+    for(let i=0; i<15; i++) {
+        let star = document.createElement('div');
+        star.className = 'bg-star';
+        star.innerText = '✦';
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        canvas.appendChild(star);
+    }
+  }
+
   function startGame() {
     document.getElementById('screen-start').classList.remove('active');
     score = 0;
     lives = 3;
     currentDiscussIndex = 0;
     updateLivesUI();
-    scoreDisplay.innerText = 'امتیاز: ' + score;
+    scoreDisplay.innerText = 'امتیاز: 0';
+    
+    // محاسبه ارتفاع قلعه برای تشخیص برخورد
+    castleLineY = window.innerHeight - 130; 
+
+    createRandomStars();
     resetRound();
   }
 
   function resetRound() {
     bubbles.forEach(b => b.element.remove());
     bubbles = [];
-    timeLeft = 30;
+    timeLeft = 40;
     timeBar.style.width = '100%';
     timeBar.style.background = '#F59E0B';
     bubbleSpawnTimer = 0;
@@ -222,16 +274,13 @@
 
   function nextRound() {
     document.getElementById('screen-discuss').classList.remove('active');
-    if (currentDiscussIndex < discussQuestions.length - 1) {
-        currentDiscussIndex++;
-    } else {
-        currentDiscussIndex = 0;
-    }
+    if (currentDiscussIndex < discussQuestions.length - 1) currentDiscussIndex++;
+    else currentDiscussIndex = 0;
     resetRound();
   }
 
   function spawnBubble() {
-    const isGood = Math.random() > 0.35; // 65% شانس کلمات خوب
+    const isGood = Math.random() > 0.35; 
     const word = isGood 
         ? goodWords[Math.floor(Math.random() * goodWords.length)]
         : badWords[Math.floor(Math.random() * badWords.length)];
@@ -246,33 +295,32 @@
     el.style.left = x + 'px';
     el.style.top = '-150px';
     el.innerText = word;
-    el.style.fontSize = (size / 5) + 'px';
+    el.style.fontSize = (size / 5.5) + 'px';
 
+    // سرعت بسیار کم برای اینکه بچه‌ها فرصت خواندن داشته باشند
     const bubble = {
         element: el,
         x: x,
         y: -150,
         size: size,
-        speed: 1.5 + Math.random() * 1.5,
+        speed: 0.6 + Math.random() * 0.4, 
         isGood: isGood,
-        clicked: false
+        clicked: false // این متغیر مانع از شمارش چندباره می‌شود
     };
 
     el.onpointerdown = (e) => {
         e.preventDefault();
         if (!gameActive || bubble.clicked) return;
-        bubble.clicked = true;
+        bubble.clicked = true; 
         
         if (isGood) {
             score += 10;
             scoreDisplay.innerText = 'امتیاز: ' + score;
             playSound('pop_good');
-            createParticles(bubble.x + size/2, bubble.y + size/2, '#22C55E');
         } else {
             lives--;
             updateLivesUI();
             playSound('pop_bad');
-            createParticles(bubble.x + size/2, bubble.y + size/2, '#EF4444');
             if (lives <= 0) endGame(false);
         }
         bubble.element.remove();
@@ -283,33 +331,13 @@
     bubbles.push(bubble);
   }
 
-  function createParticles(x, y, color) {
-    for(let i=0; i<8; i++) {
-        let p = document.createElement('div');
-        p.className = 'particle';
-        p.style.width = '15px'; p.style.height = '15px';
-        p.style.background = color;
-        p.style.left = (x - 7.5) + 'px';
-        p.style.top = (y - 7.5) + 'px';
-        
-        p.animate([
-            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-            { transform: `translate(${(Math.random()-0.5)*150}px, ${(Math.random()-0.5)*150}px) scale(0)`, opacity: 0 }
-        ], { duration: 500, easing: 'ease-out' });
-        
-        canvas.appendChild(p);
-        setTimeout(() => p.remove(), 500);
-    }
-  }
-
   function gameLoop(timestamp) {
     if (!gameActive) return;
     const dt = (timestamp - lastTime) / 1000;
     lastTime = timestamp;
 
-    // کاهش زمان
     timeLeft -= dt;
-    let percent = (timeLeft / 30) * 100;
+    let percent = (timeLeft / 40) * 100;
     if(percent < 0) percent = 0;
     timeBar.style.width = percent + '%';
     if(percent < 20) timeBar.style.background = '#EF4444';
@@ -319,27 +347,28 @@
         return;
     }
 
-    // تولید حباب
     bubbleSpawnTimer += dt;
-    if (bubbleSpawnTimer > 0.7) { 
+    if (bubbleSpawnTimer > 1.0) { 
         spawnBubble();
         bubbleSpawnTimer = 0;
     }
 
-    // حرکت حباب‌ها
     for (let i = bubbles.length - 1; i >= 0; i--) {
         const b = bubbles[i];
-        if (b.clicked) continue;
+        
+        // این شرط بسیار مهم است: اگر حباب لمس شده باشد، دیگر حرکت نمی‌کند و قلبی نمی‌سوزاند
+        if (b.clicked) continue; 
+
         b.y += b.speed * dt * 60; 
         b.element.style.top = b.y + 'px';
 
-        // برخورد با قلعه (پایین صفحه)
-        if (b.y + b.size > window.innerHeight - 150) {
+        // برخورد با قلعه (تنها اگر لمس نشده باشد)
+        if (b.y + b.size > castleLineY) {
+            b.clicked = true; // به عنوان لمس شده علامت‌گذاری می‌شود تا دوباره شمرده نشود
             if (!b.isGood) {
                 lives--;
                 updateLivesUI();
                 playSound('pop_bad');
-                createParticles(b.x + b.size/2, b.y + b.size/2, '#EF4444');
                 if (lives <= 0) endGame(false);
             }
             b.element.remove();
@@ -369,7 +398,6 @@
         document.getElementById('discuss-text').innerText = discussQuestions[currentDiscussIndex];
     }
   }
-
 </script>
 </body>
 </html>
