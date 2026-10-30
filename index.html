@@ -6,7 +6,7 @@
 <title>قلعه فرهان و دوستانش</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;900&display=swap');
-  * { box-sizing: border-box; user-select: none; }
+  * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; padding: 0; overflow: hidden; width: 100vw; height: 100vh; font-family: 'Vazirmatn', Tahoma, sans-serif; touch-action: none; background: linear-gradient(180deg, #4ADE80 0%, #22C55E 25%, #0284C7 60%, #0F172A 100%); }
   #game-container { position: relative; width: 100%; height: 100%; overflow: hidden; }
   
@@ -52,7 +52,7 @@
   /* ورودی متن سوال */
   #answer-input { padding: 12px; font-size: 18px; border-radius: 10px; border: 2px solid #F59E0B; font-family: inherit; width: 80%; max-width: 400px; margin-bottom: 20px; text-align: center; }
   
-  /* لایه نمایش پیام (تاخیر 5 ثانیه) */
+  /* لایه نمایش پیام (تاخیر) */
   .delay-message { position: absolute; inset: 0; z-index: 180; display: none; align-items: center; justify-content: center; flex-direction: column; background: rgba(0,0,0,0.4); color: white; text-align: center; opacity: 0; transition: opacity 1s; }
   .delay-message.active { display: flex; opacity: 1; }
   .delay-message h1 { font-size: 48px; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
@@ -111,8 +111,9 @@
   let score = 0; let lives = 3; let timeLeft = 40; let gameActive = false;
   let bubbles = []; let animationId; let lastTime = 0; let bubbleSpawnTimer = 0; let castleLineY = 0;
   let isFinalTenSeconds = false;
-  let isInFirst20Seconds = true; // برای تشخیص 20 ثانیه اول
+  let isInFirst20Seconds = true;
   let confettiInterval = null;
+  let keepAliveTimer = null;
 
   const goodWords = ["مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند", "احترام", "همدلی", "فداکاری", "بخشش", "صداقت"];
   const badWords = ["فحش", "کتک زدن", "مسخره", "احمق", "دعوا", "هل دادن", "داد زدن", "بی‌احترامی", "زورگویی"];
@@ -125,10 +126,7 @@
   ];
   let currentWinQuestion = "";
 
-  // رنگ‌های 20 ثانیه اول: فقط زرد، سبز، آبی
   const firstPhaseColors = ['#FBBF24', '#4ADE80', '#3B82F6'];
-  
-  // رنگ‌های بعد از 20 ثانیه: 10 رنگ مختلف
   const allColors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16', '#6366F1'];
 
   // ====== مدیریت صداها ======
@@ -136,10 +134,43 @@
   const loseSound = new Audio('lose.mp3');
   winSound.preload = 'auto';
   loseSound.preload = 'auto';
+  winSound.crossOrigin = 'anonymous';
+  loseSound.crossOrigin = 'anonymous';
+
+  // گزارش خطا در صورت نبود فایل صوتی
+  winSound.addEventListener('error', () => console.warn('⚠️ win.mp3 در دسترس نیست'));
+  loseSound.addEventListener('error', () => console.warn('⚠️ lose.mp3 در دسترس نیست'));
 
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // ====== آزادسازی صدا در WebView (بسیار مهم برای Capacitor) ======
+  let audioUnlocked = false;
+  function unlockAudio() {
+      if (audioUnlocked) return;
+      try {
+          if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+          // یک بافر خالی پخش کن تا WebView اجازه پخش صدا بدهد
+          const buf = audioCtx.createBuffer(1, 1, 22050);
+          const src = audioCtx.createBufferSource();
+          src.buffer = buf;
+          src.connect(audioCtx.destination);
+          src.start(0);
+          // preload واقعی فایل‌ها
+          winSound.load();
+          loseSound.load();
+          audioUnlocked = true;
+          console.log('✅ Audio unlocked');
+      } catch (e) {
+          console.warn('unlockAudio error:', e);
+      }
+  }
+  document.addEventListener('pointerdown', unlockAudio);
+  document.addEventListener('touchstart', unlockAudio);
+  document.addEventListener('click', unlockAudio);
+  document.addEventListener('keydown', unlockAudio);
+
   function playDefaultSound(type) {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
     const now = audioCtx.currentTime;
     if (type === 'good') { 
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
@@ -154,19 +185,52 @@
     }
   }
 
+  // پخش مطمئن فایل صوتی با fallback
+  function playSoundFile(audio, fallbackType) {
+      if (!audio) { playDefaultSound(fallbackType); return; }
+      try {
+          audio.pause();
+          audio.currentTime = 0;
+          const p = audio.play();
+          if (p && p.catch) {
+              p.catch((err) => {
+                  console.warn('audio.play failed:', err);
+                  playDefaultSound(fallbackType);
+              });
+          }
+      } catch (e) {
+          console.warn('audio exception:', e);
+          playDefaultSound(fallbackType);
+      }
+  }
+
+  // نگه داشتن WebView فعال تا صدا کامل پخش شود
+  function startKeepAlive() {
+      if (keepAliveTimer) clearInterval(keepAliveTimer);
+      keepAliveTimer = setInterval(() => {
+          // تغییر کوچک در DOM تا WebView خواب نرود
+          document.body.style.opacity = document.body.style.opacity === '0.999' ? '1' : '0.999';
+      }, 150);
+  }
+  function stopKeepAlive() {
+      if (keepAliveTimer) { clearInterval(keepAliveTimer); keepAliveTimer = null; }
+      document.body.style.opacity = '1';
+  }
+
   function speak(text) {
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'fa-IR'; utterance.rate = 1.0; utterance.pitch = 1.1;
-        window.speechSynthesis.speak(utterance);
+        try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'fa-IR'; utterance.rate = 1.0; utterance.pitch = 1.1;
+            window.speechSynthesis.speak(utterance);
+        } catch(e) { console.warn('speak error:', e); }
     }
   }
 
   function startConfettiBlast() {
     let count = 0;
     if (confettiInterval) clearInterval(confettiInterval);
-    
     confettiInterval = setInterval(() => {
         for (let i = 0; i < 10; i++) {
             createOneConfetti(window.innerWidth * 0.25);
@@ -188,10 +252,8 @@
       confetti.style.top = '50px';
       confetti.style.backgroundColor = allColors[Math.floor(Math.random() * allColors.length)];
       confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-      
       const xMove = (Math.random() - 0.5) * window.innerWidth;
       const duration = 2 + Math.random() * 1.5;
-      
       confetti.animate([
           { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
           { transform: `translate(${xMove}px, 105vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
@@ -200,14 +262,22 @@
           easing: 'cubic-bezier(.37,0,.63,1)',
           fill: 'forwards'
       });
-      
       canvas.appendChild(confetti);
       setTimeout(() => confetti.remove(), duration * 1000 + 500);
   }
 
-  function updateLivesUI() { livesDisplay.innerHTML = ''; for(let i=0; i<3; i++) { let span = document.createElement('span'); span.className = 'heart'; span.innerText = i < lives ? '❤️' : '🖤'; livesDisplay.appendChild(span); } }
+  function updateLivesUI() { 
+    livesDisplay.innerHTML = ''; 
+    for(let i=0; i<3; i++) { 
+      let span = document.createElement('span'); 
+      span.className = 'heart'; 
+      span.innerText = i < lives ? '❤️' : '🖤'; 
+      livesDisplay.appendChild(span); 
+    } 
+  }
 
   function startGame() {
+    unlockAudio(); // اطمینان از آزادسازی صدا
     document.getElementById('screen-start').classList.remove('active');
     score = 0; lives = 3;
     updateLivesUI(); scoreDisplay.innerText = 'امتیاز: 0';
@@ -217,10 +287,13 @@
 
   function resetRound() {
     bubbles.forEach(b => b.element.remove()); bubbles = [];
-    timeLeft = 40; timeBar.style.width = '100%'; bubbleSpawnTimer = 0; gameActive = true;
+    timeLeft = 40; timeBar.style.width = '100%'; timeBar.style.background = '#F59E0B';
+    bubbleSpawnTimer = 0; gameActive = true;
     isFinalTenSeconds = false;
-    isInFirst20Seconds = true; // ریست کردن حالت 20 ثانیه اول
-    lastTime = performance.now(); if (animationId) cancelAnimationFrame(animationId); gameLoop(lastTime);
+    isInFirst20Seconds = true;
+    lastTime = performance.now(); 
+    if (animationId) cancelAnimationFrame(animationId); 
+    gameLoop(lastTime);
   }
 
   function spawnBubble() {
@@ -232,7 +305,6 @@
     const el = document.createElement('div');
     el.className = 'bubble';
     
-    // ==== منطق رنگ‌بندی (20 ثانیه اول: 3 رنگ / بعد از آن: 10 رنگ) ====
     if (isInFirst20Seconds) {
         const randomColor = firstPhaseColors[Math.floor(Math.random() * firstPhaseColors.length)];
         el.style.background = randomColor;
@@ -276,7 +348,6 @@
     if(percent < 0) percent = 0;
     timeBar.style.width = percent + '%';
 
-    // تشخیص 20 ثانیه اول
     if (timeLeft <= 20 && isInFirst20Seconds) {
         isInFirst20Seconds = false;
     }
@@ -307,28 +378,31 @@
 
   function endGame(isTimeUp) {
     gameActive = false; 
-    if (animationId) cancelAnimationFrame(animationId);
+    if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
     
     if (!isTimeUp) {
+        // ====== حالت باخت ======
         document.getElementById('delay-lose').classList.add('active');
-        
-        loseSound.currentTime = 0;
-        loseSound.play().catch(e => speak("دوباره تلاش کن قهرمان"));
+        startKeepAlive();
+        playSoundFile(loseSound, 'bad');
+        speak("دوباره تلاش کن قهرمان");
         
         setTimeout(() => {
+            stopKeepAlive();
             document.getElementById('delay-lose').classList.remove('active');
             bubbles.forEach(b => b.element.remove()); bubbles = [];
             document.getElementById('screen-lose').classList.add('active');
         }, 5000);
     } else {
+        // ====== حالت برد ======
         document.getElementById('delay-win').classList.add('active');
-        
-        winSound.currentTime = 0;
-        winSound.play().catch(e => speak("آفرین قهرمان"));
-        
+        startKeepAlive();
+        playSoundFile(winSound, 'good');
+        speak("آفرین قهرمان");
         startConfettiBlast();
         
         setTimeout(() => {
+            stopKeepAlive();
             bubbles.forEach(b => b.element.remove()); bubbles = [];
             document.getElementById('delay-win').classList.remove('active');
             
@@ -354,6 +428,14 @@
   }
 
   window.addEventListener('load', () => {
+    // بررسی وجود فایل‌های صوتی
+    fetch('win.mp3', { method: 'HEAD' })
+        .then(r => console.log(r.ok ? '✅ win.mp3 موجود است' : '❌ win.mp3 یافت نشد'))
+        .catch(() => console.warn('⚠️ بررسی win.mp3 ممکن نیست'));
+    fetch('lose.mp3', { method: 'HEAD' })
+        .then(r => console.log(r.ok ? '✅ lose.mp3 موجود است' : '❌ lose.mp3 یافت نشد'))
+        .catch(() => console.warn('⚠️ بررسی lose.mp3 ممکن نیست'));
+    
     setTimeout(() => {
         speak("خوش آمدید");
     }, 1000);
