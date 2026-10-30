@@ -39,8 +39,8 @@ jobs:
         run: |
           npx cap init "Farhan Castle" com.yourname.farhancastle --web-dir www
           npx cap add android
-          # افقی کردن صفحه
-          sed -i 's/<activity/<activity android:screenOrientation="landscape"/' android/app/src/main/AndroidManifest.xml
+          # مجبور کردن برنامه به حالت عمودی (Portrait)
+          sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
           npx cap sync android
 
       - name: Build Debug APK
