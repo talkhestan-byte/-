@@ -3,1228 +3,945 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#172554">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#66c8ff">
 <title>قلعه فرهان و دوستانش</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;700;900&display=swap');
-
 * {
   box-sizing: border-box;
-  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-  font-family: Vazirmatn, Tahoma, sans-serif;
-  touch-action: manipulation;
+:root {
+  --blue: #1688e8;
+  --dark-blue: #14549b;
+  --gold: #ffcb38;
 }
 
 body {
-  background: #60a5fa;
+  margin: 0;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: Tahoma, Arial, sans-serif;
+  background: #72d0ff;
+  color: #173a55;
+  user-select: none;
 }
 
 button {
   font-family: inherit;
+  cursor: pointer;
+  border: 0;
   touch-action: manipulation;
 }
 
-#game-container {
+#game {
   position: relative;
   width: 100%;
-  height: 100%;
   height: 100dvh;
+  min-height: 480px;
   overflow: hidden;
   isolation: isolate;
   background: linear-gradient(
-    180deg,
-    #1e3a8a 0%,
-    #3b82f6 23%,
-    #93c5fd 48%,
-    #fde68a 73%,
-    #fca5a5 100%
+    to bottom,
+    #65c8ff 0%,
+    #b8eeff 55%,
+    #d7f6c1 100%
   );
 }
 
-.sky {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: linear-gradient(
-    180deg,
-    #1e3a8a,
-    #3b82f6 22%,
-    #93c5fd 48%,
-    #fde68a 75%,
-    #f87171
-  );
-}
+/* ---------- منظره ---------- */
 
 .sun {
   position: absolute;
-  width: 100px;
-  height: 100px;
-  top: 85px;
-  right: 25px;
+  top: 7%;
+  left: 9%;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff9c4, #facc15 60%, transparent 75%);
-  box-shadow: 0 0 60px #fde047;
-  z-index: 1;
-  animation: sunPulse 4s infinite alternate;
-}
-
-@keyframes sunPulse {
-  to { transform: scale(1.08); }
+  background: #ffe66b;
+  box-shadow: 0 0 35px #ffe66b;
+  z-index: -1;
 }
 
 .cloud {
   position: absolute;
-  z-index: 2;
-  width: 100px;
-  height: 30px;
-  background: #fff;
+  width: 110px;
+  height: 28px;
+  background: rgba(255,255,255,.85);
   border-radius: 40px;
-  opacity: .9;
-  animation: clouds 55s linear infinite;
+  z-index: -1;
 }
 
 .cloud::before,
 .cloud::after {
   content: "";
   position: absolute;
+  bottom: 7px;
   border-radius: 50%;
-  background: white;
+  background: inherit;
 }
 
 .cloud::before {
-  width: 45px;
-  height: 45px;
-  left: 15px;
-  top: -20px;
+  width: 42px;
+  height: 42px;
+  right: 18px;
 }
 
 .cloud::after {
-  width: 35px;
-  height: 35px;
-  right: 15px;
-  top: -13px;
+  width: 52px;
+  height: 52px;
+  right: 43px;
 }
 
-.cloud.c1 { top: 14%; left: -120px; }
-.cloud.c2 { top: 25%; left: -120px; animation-delay: -20s; }
-.cloud.c3 { top: 8%; left: -120px; animation-delay: -35s; }
-
-@keyframes clouds {
-  from { transform: translateX(-120px); }
-  to { transform: translateX(calc(100vw + 250px)); }
+.cloud1 {
+  top: 14%;
+  right: 8%;
 }
 
-.mountains-far {
+.cloud2 {
+  top: 26%;
+  left: 22%;
+  transform: scale(.75);
+}
+
+.mountain {
   position: absolute;
-  bottom: 38%;
-  width: 100%;
-  height: 23%;
-  z-index: 3;
-  background: linear-gradient(#a78bfa, #6d28d9);
-  clip-path: polygon(
-    0 100%, 0 60%, 12% 35%, 22% 60%, 38% 20%,
-    50% 55%, 65% 25%, 80% 60%, 92% 35%, 100% 55%, 100% 100%
-  );
-}
-
-.mountains-near {
-  position: absolute;
-  bottom: 29%;
-  width: 100%;
-  height: 20%;
-  z-index: 4;
-  background: linear-gradient(#10b981, #047857);
-  clip-path: polygon(
-    0 100%, 0 55%, 15% 35%, 30% 65%, 45% 30%,
-    60% 60%, 75% 35%, 90% 55%, 100% 40%, 100% 100%
-  );
-}
-
-.forest {
-  position: absolute;
-  bottom: 21%;
-  left: 0;
-  width: 100%;
-  height: 15%;
-  z-index: 5;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-}
-
-.tree {
+  bottom: 24%;
   width: 0;
   height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 48px solid #047857;
-  position: relative;
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 170px solid #79b8a2;
+  z-index: -1;
 }
 
-.tree::after {
+.mountain::after {
   content: "";
   position: absolute;
-  left: -10px;
-  top: 30px;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 32px solid #059669;
+  top: 42px;
+  left: -42px;
+  width: 0;
+  height: 0;
+  border-left: 42px solid transparent;
+  border-right: 42px solid transparent;
+  border-bottom: 72px solid #e8f7f6;
+}
+
+.mountain1 {
+  left: -50px;
+}
+
+.mountain2 {
+  right: -30px;
+  bottom: 26%;
+  transform: scale(1.25);
+  border-bottom-color: #6caa96;
+}
+
+.hill {
+  position: absolute;
+  bottom: -9%;
+  width: 75%;
+  height: 36%;
+  border-radius: 50% 50% 0 0;
+  background: #70cf72;
+  z-index: -1;
+}
+
+.hill1 {
+  left: -20%;
+}
+
+.hill2 {
+  right: -20%;
+  bottom: -13%;
+  height: 43%;
+  background: #49b95d;
 }
 
 .river {
   position: absolute;
-  bottom: 10%;
-  width: 100%;
-  height: 13%;
-  z-index: 6;
-  background: repeating-linear-gradient(
-    175deg,
-    #0891b2 0,
-    #06b6d4 12px,
-    #0e7490 24px
-  );
-  animation: river 4s linear infinite;
-}
-
-@keyframes river {
-  50% { filter: brightness(1.12); }
-}
-
-.grass-ground {
-  position: absolute;
+  z-index: -1;
   bottom: 0;
-  height: 15%;
-  width: 100%;
-  z-index: 7;
-  background: linear-gradient(#4ade80, #15803d);
+  left: 25%;
+  width: 36%;
+  height: 32%;
+  background: #55c8f2;
+  border-radius: 60% 50% 0 0;
+  transform: rotate(-8deg);
+  opacity: .9;
 }
 
-#flowers {
+.tree {
   position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 14%;
-  z-index: 8;
-  pointer-events: none;
+  bottom: 16%;
+  z-index: -1;
+  font-size: clamp(35px, 8vw, 65px);
+  filter: drop-shadow(0 3px 2px #267c3c);
 }
 
-.flower {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+.tree1 {
+  left: 3%;
 }
 
-#castle-container {
+.tree2 {
+  right: 4%;
+  bottom: 20%;
+}
+
+.castle {
   position: absolute;
-  bottom: 5%;
   left: 50%;
+  bottom: 12%;
   transform: translateX(-50%);
-  width: 190px;
-  height: 165px;
-  z-index: 20;
-  filter: drop-shadow(0 7px 10px #0005);
+  width: clamp(145px, 35vw, 260px);
+  height: clamp(130px, 30vh, 205px);
+  z-index: 0;
+  filter: drop-shadow(0 5px 4px rgba(0,0,0,.2));
 }
 
-.tower-left,
-.tower-right {
+.castle-main {
   position: absolute;
   bottom: 0;
-  width: 52px;
-  height: 115px;
-  background: linear-gradient(#c4b5fd, #7c3aed);
-  border-radius: 6px 6px 0 0;
+  left: 20%;
+  width: 60%;
+  height: 70%;
+  border: 4px solid #a45e35;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(90deg, #f4bb69, #ffe1a0, #e9a958);
 }
 
-.tower-left { left: 0; }
-.tower-right { right: 0; }
-
-.tower-left::before,
-.tower-right::before {
-  content: "";
-  position: absolute;
-  top: -9px;
-  width: 100%;
-  height: 12px;
-  background: repeating-linear-gradient(
-    90deg, #8b5cf6 0 10px, transparent 10px 17px
-  );
-}
-
-.tower-left::after,
-.tower-right::after {
-  content: "";
-  position: absolute;
-  top: 25px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 16px;
-  height: 22px;
-  background: #fbbf24;
-  border-radius: 9px 9px 0 0;
-}
-
-.castle-body {
+.castle-tower {
   position: absolute;
   bottom: 0;
-  left: 38px;
-  right: 38px;
-  height: 88px;
-  background: linear-gradient(#c4b5fd, #8b5cf6);
+  width: 27%;
+  height: 90%;
+  border: 4px solid #a45e35;
+  background: linear-gradient(90deg, #e9a45c, #ffdda0);
 }
 
-.castle-body::before {
-  content: "";
-  position: absolute;
-  top: -10px;
+.castle-tower.left {
   left: 0;
-  width: 100%;
-  height: 12px;
-  background: repeating-linear-gradient(
-    90deg, #a78bfa 0 12px, transparent 12px 20px
-  );
 }
 
-.door {
+.castle-tower.right {
+  right: 0;
+}
+
+.castle-roof {
+  position: absolute;
+  top: -22%;
+  left: -12%;
+  width: 124%;
+  height: 25%;
+  background: #d95345;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.castle-door {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 53px;
-  background: linear-gradient(#78350f, #451a03);
-  border: 3px solid #a16207;
-  border-radius: 20px 20px 0 0;
-  z-index: 3;
+  left: 36%;
+  width: 28%;
+  height: 42%;
+  background: #85452b;
+  border-radius: 50% 50% 0 0;
 }
 
-.flag-pole {
+.castle-window {
   position: absolute;
-  top: -53px;
-  left: 50%;
-  width: 3px;
-  height: 58px;
-  background: #e5e7eb;
-  z-index: 5;
+  top: 24%;
+  left: 43%;
+  width: 14%;
+  height: 19%;
+  background: #72d7ef;
+  border: 2px solid #a45e35;
+  border-radius: 50% 50% 0 0;
 }
 
-.flag-iran {
+.flag {
   position: absolute;
-  top: -52px;
-  left: calc(50% + 3px);
-  width: 45px;
-  height: 28px;
-  display: flex;
-  flex-direction: column;
-  z-index: 5;
+  top: -30%;
+  left: 45%;
+  width: 4px;
+  height: 34%;
+  background: #70452b;
 }
 
-.flag-green { flex: 1; background: #239f40; }
-.flag-white { flex: 1; background: #fff; }
-.flag-red { flex: 1; background: #da0000; }
-
-#header {
+.flag::after {
+  content: "";
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  min-height: 58px;
-  padding: 10px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #ffffffed;
-  border-bottom: 3px solid #f59e0b;
-  color: #1e293b;
-  font-size: 18px;
-  font-weight: 900;
-  z-index: 100;
+  left: 3px;
+  width: 30px;
+  height: 17px;
+  background: #e94343;
+  clip-path: polygon(0 0,100% 0,75% 100%,0 100%);
 }
 
-#score-display { color: #b45309; }
-.heart { font-size: 22px; margin-left: 3px; }
-
-#time-bar-container {
-  position: absolute;
-  top: 58px;
-  left: 0;
-  width: 100%;
-  height: 9px;
-  background: #0003;
-  z-index: 100;
-}
-
-#time-bar {
-  height: 100%;
-  width: 100%;
-  background: #22c55e;
-  transition: width .1s linear;
-}
-
-.bubble {
-  position: absolute;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 7px;
-  border: 3px solid #ffffffcc;
-  border-radius: 50%;
-  color: white;
-  font-weight: 900;
-  line-height: 1.2;
-  text-shadow: 0 2px 4px #0009;
-  box-shadow: inset -7px -7px 15px #0003, inset 6px 6px 15px #fff5, 0 5px 12px #0004;
-  cursor: pointer;
-  touch-action: manipulation;
-}
+/* ---------- صفحه شروع و پایان ---------- */
 
 .screen {
   position: absolute;
   inset: 0;
-  z-index: 200;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto;
-  color: white;
-  text-align: center;
-  background: #0f172af2;
-}
-
-.screen.active { display: flex; }
-
-.screen h1 {
-  font-size: clamp(25px, 6vw, 34px);
-  font-weight: 900;
-  color: #fbbf24;
-  margin: 8px 0 16px;
-}
-
-.screen p {
-  font-size: 19px;
-  line-height: 1.8;
-  font-weight: 700;
-  max-width: 500px;
-}
-
-.screen button {
-  border: 0;
-  border-radius: 16px;
-  padding: 14px 34px;
-  background: linear-gradient(135deg, #10b981, #047857);
-  color: white;
-  font-size: 22px;
-  font-weight: 900;
-  box-shadow: 0 6px 0 #065f46;
-  cursor: pointer;
-}
-
-.screen button:active {
-  transform: translateY(3px);
-}
-
-#screen-start {
-  justify-content: center;
-  background: #0f172aeF;
-  padding: 18px 16px;
-}
-
-#start-content {
+  z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(12px, 2.5vh, 22px);
-  width: 100%;
-  max-width: 560px;
-  margin: auto;
+  gap: 12px;
+  padding: 20px;
+  overflow-y: auto;
+  background: linear-gradient(
+    180deg,
+    rgba(91,196,255,.92),
+    rgba(204,245,255,.94)
+  );
+  text-align: center;
 }
 
-#start-image {
-  display: block;
-  width: min(68vw, 290px);
-  height: min(32vh, 290px);
-  min-height: 135px;
-  object-fit: contain;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  animation: none;
+#startScreen {
+  display: flex;
 }
 
-#start-image.image-error {
+#endScreen {
   display: none;
+  background: rgba(220,246,255,.96);
 }
 
-#start-title {
-  font-size: clamp(25px, 6vw, 34px);
+.game-title {
+  color: #104f8e;
+  font-size: clamp(24px, 5.5vw, 40px);
+  font-weight: 900;
   line-height: 1.5;
+  text-shadow: 0 2px white, 2px 3px rgba(255,255,255,.6);
   margin: 0;
 }
 
-#start-rules {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.start-icon {
+  display: block;
+  width: min(65vw, 300px);
+  height: min(30vh, 230px);
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 5px 7px rgba(0,0,0,.18));
 }
 
-.rule-line {
-  width: 100%;
-  padding: 12px 10px;
+.instructions {
+  width: min(100%, 440px);
+  padding: 10px 14px;
+  border: 2px solid rgba(255,255,255,.9);
   border-radius: 14px;
-  font-size: clamp(16px, 4.4vw, 21px);
-  line-height: 1.7;
-  font-weight: 900;
+  background: rgba(255,255,255,.82);
+  color: #214f6d;
+  font-weight: bold;
+  font-size: clamp(13px, 3.5vw, 17px);
+  line-height: 1.8;
 }
 
-.rule-good {
-  background: linear-gradient(135deg, #10b981, #047857);
-  border: 2px solid #86efac;
-}
-
-.rule-bad {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-  border: 2px solid #fecaca;
-}
-
-#start-btn {
-  background: linear-gradient(135deg, #fbbf24, #f97316);
-  box-shadow: 0 6px 0 #b45309, 0 10px 25px #f59e0b55;
-  border: 2px solid #ffffffaa;
+.primary-button {
   min-width: 190px;
-  margin-top: 2px;
+  padding: 13px 28px;
+  border-radius: 18px;
+  color: #533800;
+  font-weight: 900;
+  font-size: 21px;
+  background: linear-gradient(#ffe878, #ffb928);
+  box-shadow: 0 5px 0 #d98b13, 0 8px 15px rgba(0,0,0,.15);
+  transition: transform .12s;
 }
 
-#champion-box {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #fbbf24, #d97706);
-  color: #7c2d12;
-  border: 5px solid white;
-  border-radius: 25px;
-  padding: 20px 30px;
-  margin-bottom: 15px;
+.primary-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #d98b13;
 }
 
-#champion-box.show { display: flex; }
+.secondary-button {
+  padding: 10px 22px;
+  border-radius: 13px;
+  color: white;
+  background: #2589da;
+  font-size: 17px;
+  font-weight: bold;
+}
 
-.trophy { font-size: 55px; }
-.champion-title { font-size: 27px; font-weight: 900; }
-.score-big { font-size: 50px; font-weight: 900; }
+#resultTitle {
+  font-size: clamp(28px, 7vw, 42px);
+  margin: 0;
+}
 
-.delay-message {
+#resultMessage {
+  font-size: 20px;
+  line-height: 1.8;
+}
+
+/* ---------- رابط بازی ---------- */
+
+#hud {
   position: absolute;
-  inset: 0;
-  z-index: 180;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 5;
   display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.hud-item {
+  padding: 8px 12px;
+  background: rgba(255,255,255,.93);
+  border: 2px solid rgba(255,255,255,.8);
+  border-radius: 13px;
+  box-shadow: 0 3px 8px rgba(0,0,0,.1);
+  font-size: clamp(13px, 3.4vw, 17px);
+  font-weight: bold;
+  color: #174e78;
+}
+
+#playArea {
+  position: absolute;
+  inset: 65px 0 0;
+  display: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.word-bubble {
+  position: absolute;
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: #0008;
-  color: white;
+  min-width: 78px;
+  min-height: 55px;
+  max-width: 150px;
+  padding: 10px 13px;
+  border: 3px solid rgba(255,255,255,.95);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #fff, #c8f5ff);
+  color: #174d86;
+  font-size: clamp(15px, 4vw, 20px);
+  font-weight: 900;
   text-align: center;
-  padding: 20px;
+  box-shadow: 0 5px 12px rgba(0,0,0,.15);
+  animation: bubbleFloat 2s ease-in-out infinite alternate;
 }
 
-.delay-message.active { display: flex; }
-
-.delay-message h1 {
-  font-size: clamp(28px, 7vw, 44px);
-  text-shadow: 0 4px 12px #000;
+.word-bubble.good {
+  background: linear-gradient(145deg, #ffffff, #c6ffbc);
 }
 
-.confetti {
+.word-bubble.bad {
+  background: linear-gradient(145deg, #fff, #ffc7c7);
+}
+
+@keyframes bubbleFloat {
+  from { transform: translateY(0) rotate(-3deg); }
+  to { transform: translateY(-8px) rotate(3deg); }
+}
+
+#gameMessage {
   position: absolute;
-  width: 10px;
-  height: 10px;
-  z-index: 190;
+  z-index: 6;
+  top: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 90%;
+  padding: 10px 17px;
+  border-radius: 15px;
+  background: rgba(255,255,255,.92);
+  color: #18517a;
+  font-weight: bold;
+  text-align: center;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s;
 }
 
-@media (max-height: 620px) {
-  #start-content { gap: 8px; }
-  #start-image {
-    height: 24vh;
-    min-height: 95px;
-    width: min(45vw, 190px);
+#gameMessage.show {
+  opacity: 1;
+}
+
+#soundButton {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 8;
+  display: none;
+  padding: 10px 13px;
+  border-radius: 50px;
+  background: rgba(255,255,255,.94);
+  color: #174e78;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+/* گوشی‌های کوچک */
+@media (max-height: 650px) {
+  .screen {
+    gap: 7px;
+    padding: 10px;
   }
-  .rule-line { padding: 7px; }
-  #start-btn { padding: 10px 28px; }
+
+  .start-icon {
+    height: min(25vh, 155px);
+  }
+
+  .instructions {
+    padding: 6px 10px;
+  }
+
+  .primary-button {
+    padding: 10px 25px;
+  }
+
+  .castle {
+    bottom: 8%;
+  }
+}
+
+[hidden] {
+  display: none !important;
 }
 </style>
 </head>
 
 <body>
-<div id="game-container">
+<div id="game">
 
-  <div class="sky"></div>
   <div class="sun"></div>
-
-  <div class="cloud c1"></div>
-  <div class="cloud c2"></div>
-  <div class="cloud c3"></div>
-
-  <div class="mountains-far"></div>
-  <div class="mountains-near"></div>
-
-  <div class="forest">
-    <div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div>
-    <div class="tree"></div><div class="tree"></div>
-  </div>
-
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="mountain mountain1"></div>
+  <div class="mountain mountain2"></div>
+  <div class="hill hill1"></div>
+  <div class="hill hill2"></div>
   <div class="river"></div>
-  <div class="grass-ground"></div>
-  <div id="flowers"></div>
+  <div class="tree tree1">🌳</div>
+  <div class="tree tree2">🌲</div>
 
-  <div id="header">
-    <div id="score-display">امتیاز: ۰</div>
-    <div id="lives-display">❤️❤️❤️</div>
-  </div>
-
-  <div id="time-bar-container">
-    <div id="time-bar"></div>
-  </div>
-
-  <div id="castle-container">
-    <div class="flag-pole"></div>
-    <div class="flag-iran">
-      <div class="flag-green"></div>
-      <div class="flag-white"></div>
-      <div class="flag-red"></div>
+  <div class="castle" id="castle">
+    <div class="castle-main">
+      <div class="castle-door"></div>
+      <div class="castle-window"></div>
     </div>
-    <div class="tower-left"></div>
-    <div class="tower-right"></div>
-    <div class="castle-body"></div>
-    <div class="door"></div>
-  </div>
-
-  <div class="delay-message" id="delay-win">
-    <h1>🏆 آفرین قهرمان! 🏆</h1>
-  </div>
-
-  <div class="delay-message" id="delay-lose">
-    <h1>💔 قلعه سقوط کرد! 💔</h1>
-  </div>
-
-  <!-- صفحه شروع: فقط تصویر icon-only نمایش داده می‌شود -->
-  <div class="screen active" id="screen-start">
-    <div id="start-content">
-
-      <img
-        id="start-image"
-        src="icon-only.png"
-        alt="قلعه فرهان و دوستانش"
-        onerror="this.classList.add('image-error')"
-      >
-
-      <h1 id="start-title">🏰 قلعه فرهان و دوستانش 🏰</h1>
-
-      <div id="start-rules">
-        <div class="rule-line rule-good">
-          ✅ روی کلمات خوب ضربه بزن تا برنده بشی
-        </div>
-        <div class="rule-line rule-bad">
-          ❌ روی کلمات بد ضربه نزن که می‌بازی
-        </div>
-      </div>
-
-      <button id="start-btn" type="button">
-        شروع بازی
-      </button>
+    <div class="castle-tower left">
+      <div class="castle-roof"></div>
     </div>
+    <div class="castle-tower right">
+      <div class="castle-roof"></div>
+    </div>
+    <div class="flag"></div>
   </div>
 
-  <!-- صفحه برد -->
-  <div class="screen" id="screen-win">
-    <div id="champion-box">
-      <div class="trophy">🏆</div>
-      <div class="champion-title">قهرمان!</div>
-      <p>امتیاز تو:</p>
-      <div class="score-big" id="final-score">۰</div>
+  <!-- صفحه شروع -->
+  <section class="screen" id="startScreen">
+    <h1 class="game-title">🏰 قلعه فرهان و دوستانش</h1>
+
+    <img
+      id="startIcon"
+      class="start-icon"
+      src="./icon-only.png"
+      alt="تصویر بازی قلعه فرهان و دوستانش"
+    >
+
+    <div class="instructions">
+      🎯 روی کلمه‌های خوب بزن و ۱۰ امتیاز بگیر!
     </div>
 
-    <h1>یک سؤال برای تو:</h1>
-    <p id="win-question" style="color:#fbbf24"></p>
-    <p style="color:#cbd5e1;font-size:16px">
-      🎤 جوابت رو شفاهی به معلمت بگو
-    </p>
-    <button id="finish-btn" type="button">پایان</button>
+    <div class="instructions">
+      ⚠️ از کلمه‌های بد دوری کن؛ با ۳ اشتباه بازی تمام می‌شود.
+      <br>
+      ⏱️ برای پیروزی باید ۴۰ ثانیه دوام بیاوری.
+    </div>
+
+    <button class="primary-button" id="startButton" type="button">
+      شروع بازی 🚀
+    </button>
+
+    <div id="assetNotice" style="font-size:12px;color:#6c5360" hidden>
+      تصویر آیکن پیدا نشد؛ نام فایل و مسیر آن را بررسی کن.
+    </div>
+  </section>
+
+  <!-- اطلاعات بازی -->
+  <div id="hud">
+    <div class="hud-item">⭐ امتیاز: <span id="score">۰</span></div>
+    <div class="hud-item">❤️ جان: <span id="lives">۳</span></div>
+    <div class="hud-item">⏱️ زمان: <span id="timer">۴۰</span></div>
   </div>
 
-  <!-- صفحه باخت -->
-  <div class="screen" id="screen-lose">
-    <h1>💔 قلعه سقوط کرد! 💔</h1>
-    <p>اشکالی نداره قهرمان! دوباره تلاش کن.</p>
-    <button id="restart-btn" type="button">بازی مجدد</button>
-  </div>
+  <div id="playArea" aria-label="محیط بازی"></div>
+  <div id="gameMessage" role="status"></div>
 
+  <button id="soundButton" type="button">🔊 صدا روشن</button>
+
+  <!-- صفحه پایان -->
+  <section class="screen" id="endScreen">
+    <h2 id="resultTitle">آفرین!</h2>
+    <div id="resultMessage"></div>
+    <button class="primary-button" id="restartButton" type="button">
+      بازی دوباره 🔄
+    </button>
+    <button class="secondary-button" id="homeButton" type="button">
+      صفحه شروع 🏠
+    </button>
+  </section>
+
+  <!-- فایل‌های صوتی -->
+  <audio id="startMusic" src="./start.mp3" preload="auto" loop></audio>
+  <audio id="winSound" src="./win.mp3" preload="auto"></audio>
+  <audio id="loseSound" src="./lose.mp3" preload="auto"></audio>
 </div>
-
-<!-- فایل موسیقی شروع -->
-<audio id="start-music" src="start.mp3" preload="auto" loop></audio>
-<audio id="win-audio" src="win.mp3" preload="auto"></audio>
-<audio id="lose-audio" src="lose.mp3" preload="auto"></audio>
 
 <script>
 "use strict";
 
-const $ = id => document.getElementById(id);
+/* ---------- دسترسی به اجزای صفحه ---------- */
+const $ = (id) => document.getElementById(id);
 
-const gameContainer = $("game-container");
-const scoreDisplay = $("score-display");
-const livesDisplay = $("lives-display");
-const timeBar = $("time-bar");
-
-const startScreen = $("screen-start");
-const winScreen = $("screen-win");
-const loseScreen = $("screen-lose");
-
-const startMusic = $("start-music");
-const winAudio = $("win-audio");
-const loseAudio = $("lose-audio");
+const startScreen = $("startScreen");
+const endScreen = $("endScreen");
+const startButton = $("startButton");
+const restartButton = $("restartButton");
+const homeButton = $("homeButton");
+const startMusic = $("startMusic");
+const winSound = $("winSound");
+const loseSound = $("loseSound");
+const playArea = $("playArea");
+const hud = $("hud");
+const soundButton = $("soundButton");
+const gameMessage = $("gameMessage");
+const startIcon = $("startIcon");
 
 let score = 0;
 let lives = 3;
 let timeLeft = 40;
-let gameActive = false;
-let bubbles = [];
-let animationId = null;
-let lastTime = 0;
-let spawnTimer = 0;
-let castleLineY = 0;
-let confettiTimer = null;
-let endTimer = null;
-let firstPhase = true;
-let audioContext = null;
+let gameRunning = false;
+let soundEnabled = true;
+let timerInterval = null;
+let spawnInterval = null;
+let messageTimeout = null;
+let roundId = 0;
 
-const goodWords = [
-  "مهربانی", "دوستی", "آفرین", "کمک کردن", "لبخند",
-  "احترام", "همدلی", "فداکاری", "بخشش", "صداقت",
-  "قول دادن", "گوش دادن", "تشکر کردن", "سلام کردن",
-  "بازی کردن", "نقاشی", "کتاب خواندن", "صبر کردن",
-  "قانون", "تمیزکاری", "شادی", "دلسوزی", "آرامش",
-  "محبت", "همکاری", "ورزش کردن", "آب خوردن",
-  "کمک به دوست", "بازی منصفانه", "گفتن حقیقت",
-  "عذرخواهی", "غذای سالم", "کمک به مامان", "کمک به بابا"
+const GOOD_WORDS = [
+  "دوستی", "مهربانی", "فرهان", "کمک",
+  "راستی", "شجاعت", "تلاش", "دانایی",
+  "همکاری", "امید", "خوبی", "احترام"
 ];
 
-const badWords = [
-  "فحش", "کتک زدن", "مسخره کردن", "دعوا", "هل دادن",
-  "داد زدن", "بی‌احترامی", "زورگویی", "دروغ", "اذیت کردن",
-  "آزار دادن", "شکستن", "غیبت کردن", "بدگویی", "دزدی",
-  "ترساندن", "تقلب", "بی‌ادبی", "جیغ زدن", "لگد زدن",
-  "گاز گرفتن", "تف کردن", "بی‌نظمی", "دروغ گفتن",
-  "قانون‌شکنی", "توهین", "پرت کردن", "کشیدن مو"
+const BAD_WORDS = [
+  "دروغ", "دعوا", "تنبلی", "بی‌احترامی",
+  "تقلب", "بدرفتاری"
 ];
 
-const winQuestions = [
-  "وقتی دوستت ناراحت است، چه کار خوبی می‌توانی بکنی؟",
-  "یک کلمه‌ی خوب که امروز یاد گرفتی چیست؟",
-  "چرا دعوا کردن باعث ناراحتی دوستانت می‌شود؟",
-  "چطور با کلمات خوب می‌توانیم دوستانمان را شاد کنیم؟"
-];
+/* ---------- تصویر آیکن ---------- */
+startIcon.addEventListener("error", function () {
+  $("assetNotice").hidden = false;
+  this.style.display = "none";
+});
 
-const colors = [
-  "#EF4444", "#3B82F6", "#10B981", "#F59E0B",
-  "#8B5CF6", "#EC4899", "#06B6D4", "#F97316"
-];
-
-function randomItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function createFlowers() {
-  const flowers = $("flowers");
-  const flowerColors = [
-    "#f472b6", "#fbbf24", "#ef4444",
-    "#a78bfa", "#fb923c", "#ffffff"
-  ];
-
-  for (let i = 0; i < 40; i++) {
-    const f = document.createElement("div");
-    f.className = "flower";
-    f.style.left = Math.random() * 100 + "%";
-    f.style.bottom = Math.random() * 85 + "%";
-    f.style.background = randomItem(flowerColors);
-    flowers.appendChild(f);
-  }
-}
-
-function ensureAudioContext() {
-  try {
-    const AudioContextClass =
-      window.AudioContext || window.webkitAudioContext;
-
-    if (AudioContextClass && !audioContext) {
-      audioContext = new AudioContextClass();
-    }
-
-    if (audioContext && audioContext.state === "suspended") {
-      audioContext.resume().catch(() => {});
-    }
-  } catch (e) {
-    console.warn("AudioContext unavailable", e);
-  }
-}
-
-function unlockAudio() {
-  ensureAudioContext();
-
-  [startMusic, winAudio, loseAudio].forEach(audio => {
-    try {
-      audio.load();
-    } catch (_) {}
-  });
-}
-
-function playStartMusic() {
-  startMusic.volume = 0.55;
-
-  if (!startMusic.paused) return;
+/* ---------- صدا ---------- */
+function playAudio(audio, restart = true) {
+  if (!soundEnabled || !audio) return;
 
   try {
-    const result = startMusic.play();
-
-    if (result && result.catch) {
-      result.catch(error => {
-        console.warn(
-          "پخش خودکار موسیقی توسط مرورگر مسدود شد.",
-          error
-        );
+    if (restart) audio.currentTime = 0;
+    const promise = audio.play();
+    if (promise && typeof promise.catch === "function") {
+      promise.catch(() => {
+        // محدودیت پخش خودکار مرورگر؛ بازی بدون صدا هم کار می‌کند.
       });
     }
-  } catch (e) {
-    console.warn("خطا در پخش موسیقی شروع", e);
+  } catch (error) {
+    // خطای صوتی نباید اجرای بازی را متوقف کند.
   }
 }
 
-function stopStartMusic() {
-  startMusic.pause();
-
-  try {
-    startMusic.currentTime = 0;
-  } catch (_) {}
-}
-
-function playFile(audio, fallbackType) {
+function stopAudio(audio) {
+  if (!audio) return;
+  audio.pause();
   try {
     audio.currentTime = 0;
-    audio.volume = 0.8;
-
-    const result = audio.play();
-
-    if (result && result.catch) {
-      result.catch(() => playTone(fallbackType));
-    }
-  } catch (_) {
-    playTone(fallbackType);
-  }
+  } catch (error) {}
 }
 
-function playTone(type) {
-  ensureAudioContext();
-
-  if (!audioContext) return;
+function playBackgroundMusic() {
+  if (!soundEnabled) return;
 
   try {
-    const now = audioContext.currentTime;
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-
-    if (type === "good") {
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(450, now);
-      oscillator.frequency.exponentialRampToValueAtTime(850, now + 0.12);
-    } else {
-      oscillator.type = "sawtooth";
-      oscillator.frequency.setValueAtTime(160, now);
-      oscillator.frequency.exponentialRampToValueAtTime(60, now + 0.22);
+    const promise = startMusic.play();
+    if (promise && typeof promise.catch === "function") {
+      promise.catch(() => {});
     }
-
-    gain.gain.setValueAtTime(0.12, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-
-    oscillator.start(now);
-    oscillator.stop(now + 0.26);
-  } catch (_) {}
+  } catch (error) {}
 }
 
-function speak(text) {
-  if (!("speechSynthesis" in window)) return;
+function enableAudioFromGesture() {
+  if (!soundEnabled) return;
 
-  try {
-    speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "fa-IR";
-    utterance.rate = 0.95;
-    utterance.pitch = 1.1;
-
-    speechSynthesis.speak(utterance);
-  } catch (_) {}
+  // برای مرورگرهایی که پخش خودکار را مسدود می‌کنند.
+  playBackgroundMusic();
 }
 
-function updateLives() {
-  livesDisplay.textContent =
-    "❤️".repeat(Math.max(0, lives)) +
-    "🖤".repeat(Math.max(0, 3 - lives));
+document.addEventListener("pointerdown", enableAudioFromGesture, {
+  passive: true
+});
+
+/* ---------- نمایش پیام ---------- */
+function showMessage(text) {
+  gameMessage.textContent = text;
+  gameMessage.classList.add("show");
+
+  clearTimeout(messageTimeout);
+  messageTimeout = setTimeout(() => {
+    gameMessage.classList.remove("show");
+  }, 850);
 }
 
-function clearBubbles() {
-  bubbles.forEach(b => b.element.remove());
-  bubbles = [];
-}
-
-function showOnlyScreen(screen) {
-  [startScreen, winScreen, loseScreen].forEach(s => {
-    s.classList.remove("active");
-  });
-
-  screen.classList.add("active");
-}
-
-function startGame() {
-  unlockAudio();
-  stopStartMusic();
-
-  if (endTimer) {
-    clearTimeout(endTimer);
-    endTimer = null;
-  }
-
-  if (confettiTimer) {
-    clearInterval(confettiTimer);
-    confettiTimer = null;
-  }
-
-  if (animationId !== null) {
-    cancelAnimationFrame(animationId);
-    animationId = null;
-  }
-
-  document.querySelectorAll(".confetti").forEach(el => el.remove());
-
-  winAudio.pause();
-  loseAudio.pause();
-
-  showOnlyScreen(startScreen);
-  startScreen.classList.remove("active");
-
-  score = 0;
-  lives = 3;
-  timeLeft = 40;
-  gameActive = false;
-
-  clearBubbles();
-
-  scoreDisplay.textContent = "امتیاز: ۰";
-  updateLives();
-
-  $("champion-box").classList.remove("show");
-
-  castleLineY = $("castle-container").getBoundingClientRect().top;
-
-  resetRound();
-}
-
-function resetRound() {
-  clearBubbles();
-
-  timeLeft = 40;
-  spawnTimer = 0;
-  firstPhase = true;
-  gameActive = true;
-
-  timeBar.style.width = "100%";
-  timeBar.style.background = "#22c55e";
-
-  castleLineY = $("castle-container").getBoundingClientRect().top;
-
-  lastTime = performance.now();
-
-  if (animationId !== null) {
-    cancelAnimationFrame(animationId);
-  }
-
-  animationId = requestAnimationFrame(gameLoop);
-}
-
-function spawnBubble() {
-  const isGood = Math.random() > 0.45;
-  const word = randomItem(isGood ? goodWords : badWords);
-
-  const size = Math.min(
-    125,
-    Math.max(85, window.innerWidth * 0.25)
+/* ---------- اعداد فارسی ---------- */
+function persianNumber(number) {
+  return String(number).replace(/[0-9]/g, digit =>
+    "۰۱۲۳۴۵۶۷۸۹"[Number(digit)]
   );
+}
 
-  const maxX = Math.max(0, window.innerWidth - size);
-  const x = Math.random() * maxX;
+/* ---------- به‌روزرسانی اطلاعات ---------- */
+function updateHud() {
+  $("score").textContent = persianNumber(score);
+  $("lives").textContent = persianNumber(lives);
+  $("timer").textContent = persianNumber(timeLeft);
+}
 
-  const element = document.createElement("div");
-  element.className = "bubble";
+/* ---------- ساخت کلمه‌ها ---------- */
+function createBubble() {
+  if (!gameRunning) return;
 
-  const color = randomItem(
-    firstPhase
-      ? ["#FBBF24", "#4ADE80", "#3B82F6"]
-      : colors
-  );
+  const isGood = Math.random() < 0.72;
+  const words = isGood ? GOOD_WORDS : BAD_WORDS;
+  const word = words[Math.floor(Math.random() * words.length)];
 
-  element.style.background =
-    `radial-gradient(circle at 30% 25%, ${color}dd, ${color})`;
+  const bubble = document.createElement("button");
+  bubble.type = "button";
+  bubble.className = "word-bubble " + (isGood ? "good" : "bad");
+  bubble.textContent = word;
+  bubble.setAttribute("aria-label", "کلمه " + word);
 
-  element.style.width = size + "px";
-  element.style.height = size + "px";
-  element.style.left = x + "px";
-  element.style.top = "-140px";
-  element.style.fontSize =
-    Math.max(13, Math.min(21, size / 5.2)) + "px";
+  const areaWidth = playArea.clientWidth;
+  const areaHeight = playArea.clientHeight;
 
-  element.textContent = word;
+  const maxLeft = Math.max(0, areaWidth - 145);
+  const maxTop = Math.max(0, areaHeight - 90);
 
-  const bubble = {
-    element,
-    x,
-    y: -140,
-    size,
-    speed: 70 + Math.random() * 35,
-    isGood,
-    dead: false
-  };
+  bubble.style.left = Math.floor(Math.random() * maxLeft) + "px";
+  bubble.style.top = Math.floor(Math.random() * maxTop) + "px";
 
-  element.addEventListener("pointerdown", event => {
-    event.preventDefault();
+  const currentRound = roundId;
 
-    if (!gameActive || bubble.dead) return;
+  bubble.addEventListener("click", function () {
+    if (!gameRunning || currentRound !== roundId) return;
+    if (!bubble.isConnected) return;
 
-    bubble.dead = true;
-    element.remove();
-
-    bubbles = bubbles.filter(b => b !== bubble);
+    bubble.remove();
 
     if (isGood) {
       score += 10;
-      scoreDisplay.textContent = "امتیاز: " + score;
-      playTone("good");
+      showMessage("آفرین! ⭐ ۱۰ امتیاز گرفتی");
+      speakWord("آفرین");
     } else {
-      lives--;
-      updateLives();
-      playTone("bad");
+      lives -= 1;
+      showMessage("اوه! یک جان از دست دادی ❤️");
+      speakWord("مراقب باش");
+    }
 
-      if (lives <= 0) {
-        endGame(false);
-      }
+    updateHud();
+
+    if (lives <= 0) {
+      finishGame(false);
     }
   });
 
-  gameContainer.appendChild(element);
-  bubbles.push(bubble);
+  playArea.appendChild(bubble);
+
+  // کلمه‌ها پس از چند ثانیه ناپدید می‌شوند.
+  setTimeout(() => {
+    if (bubble.isConnected) bubble.remove();
+  }, 4200);
 }
 
-function gameLoop(timestamp) {
-  if (!gameActive) {
-    animationId = null;
-    return;
-  }
+/* ---------- صدای گفتاری اختیاری ---------- */
+function speakWord(text) {
+  if (!soundEnabled || !("speechSynthesis" in window)) return;
 
-  const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
-  lastTime = timestamp;
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "fa-IR";
+    utterance.rate = 1;
+    utterance.volume = 0.65;
+    window.speechSynthesis.speak(utterance);
+  } catch (error) {}
+}
 
-  timeLeft -= dt;
+/* ---------- شروع بازی ---------- */
+function startGame() {
+  clearInterval(timerInterval);
+  clearInterval(spawnInterval);
+  clearTimeout(messageTimeout);
 
-  const percent = Math.max(0, (timeLeft / 40) * 100);
-  timeBar.style.width = percent + "%";
+  roundId += 1;
+  score = 0;
+  lives = 3;
+  timeLeft = 40;
+  gameRunning = true;
 
-  if (timeLeft <= 20) firstPhase = false;
+  playArea.replaceChildren();
+  gameMessage.classList.remove("show");
 
-  if (timeLeft <= 10) {
-    timeBar.style.background = "#ef4444";
-  }
+  startScreen.style.display = "none";
+  endScreen.style.display = "none";
+  hud.style.display = "flex";
+  playArea.style.display = "block";
+  soundButton.style.display = "block";
 
-  if (timeLeft <= 0) {
-    endGame(true);
-    return;
-  }
+  updateHud();
 
-  spawnTimer += dt;
+  // موسیقی start.mp3 در طول بازی نیز پخش می‌شود.
+  playBackgroundMusic();
 
-  if (spawnTimer >= 1.15) {
-    spawnBubble();
-    spawnTimer = 0;
-  }
+  // اولین کلمه‌ها بدون تأخیر زیاد ظاهر می‌شوند.
+  createBubble();
+  createBubble();
 
-  castleLineY = $("castle-container").getBoundingClientRect().top;
+  spawnInterval = setInterval(() => {
+    if (gameRunning) createBubble();
+  }, 900);
 
-  for (let i = bubbles.length - 1; i >= 0; i--) {
-    const b = bubbles[i];
+  timerInterval = setInterval(() => {
+    if (!gameRunning) return;
 
-    if (b.dead) continue;
+    timeLeft -= 1;
+    updateHud();
 
-    b.y += b.speed * dt;
-    b.element.style.top = b.y + "px";
-
-    if (b.y + b.size >= castleLineY) {
-      b.dead = true;
-      b.element.remove();
-      bubbles.splice(i, 1);
+    if (timeLeft <= 0) {
+      timeLeft = 0;
+      updateHud();
+      finishGame(true);
     }
+  }, 1000);
+}
+
+/* ---------- پایان بازی ---------- */
+function finishGame(won) {
+  if (!gameRunning) return;
+
+  gameRunning = false;
+  clearInterval(timerInterval);
+  clearInterval(spawnInterval);
+  clearTimeout(messageTimeout);
+
+  roundId += 1;
+  playArea.replaceChildren();
+  playArea.style.display = "none";
+  hud.style.display = "none";
+  soundButton.style.display = "none";
+  gameMessage.classList.remove("show");
+
+  if ("speechSynthesis" in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch (error) {}
   }
-
-  animationId = requestAnimationFrame(gameLoop);
-}
-
-function createConfetti() {
-  const element = document.createElement("div");
-  element.className = "confetti";
-  element.style.left = Math.random() * window.innerWidth + "px";
-  element.style.top = "-15px";
-  element.style.background = randomItem(colors);
-
-  gameContainer.appendChild(element);
-
-  const duration = 2000 + Math.random() * 2000;
-
-  const animation = element.animate([
-    { transform: "translateY(0) rotate(0deg)", opacity: 1 },
-    {
-      transform:
-        `translate(${Math.random() * 160 - 80}px, ${window.innerHeight + 50}px) rotate(700deg)`,
-      opacity: 0
-    }
-  ], {
-    duration,
-    easing: "ease-out"
-  });
-
-  animation.onfinish = () => element.remove();
-}
-
-function startConfetti() {
-  if (confettiTimer) clearInterval(confettiTimer);
-
-  confettiTimer = setInterval(() => {
-    for (let i = 0; i < 8; i++) createConfetti();
-  }, 150);
-}
-
-function endGame(won) {
-  if (!gameActive) return;
-
-  gameActive = false;
-
-  if (animationId !== null) {
-    cancelAnimationFrame(animationId);
-    animationId = null;
-  }
-
-  clearBubbles();
 
   if (won) {
-    $("delay-win").classList.add("active");
-
-    playFile(winAudio, "good");
-    speak("آفرین قهرمان");
-
-    startConfetti();
-
-    endTimer = setTimeout(() => {
-      $("delay-win").classList.remove("active");
-
-      if (confettiTimer) {
-        clearInterval(confettiTimer);
-        confettiTimer = null;
-      }
-
-      document.querySelectorAll(".confetti").forEach(el => el.remove());
-
-      $("final-score").textContent = score;
-      $("champion-box").classList.add("show");
-      $("win-question").textContent = randomItem(winQuestions);
-
-      showOnlyScreen(winScreen);
-    }, 3500);
-
+    $("resultTitle").textContent = "🏆 تو برنده شدی!";
+    $("resultTitle").style.color = "#15803d";
+    $("resultMessage").textContent =
+      "۴۰ ثانیه دوام آوردی! امتیاز نهایی: " +
+      persianNumber(score);
+    stopAudio(startMusic);
+    playAudio(winSound);
   } else {
-    $("delay-lose").classList.add("active");
-
-    playFile(loseAudio, "bad");
-    speak("دوباره تلاش کن قهرمان");
-
-    endTimer = setTimeout(() => {
-      $("delay-lose").classList.remove("active");
-      showOnlyScreen(loseScreen);
-    }, 2500);
+    $("resultTitle").textContent = "💔 بازی تمام شد!";
+    $("resultTitle").style.color = "#c62828";
+    $("resultMessage").textContent =
+      "جان‌هایت تمام شد. امتیاز تو: " +
+      persianNumber(score) +
+      "؛ دوباره تلاش کن!";
+    stopAudio(startMusic);
+    playAudio(loseSound);
   }
+
+  endScreen.style.display = "flex";
 }
 
-function finishGame() {
-  stopStartMusic();
+/* ---------- بازگشت به صفحه شروع ---------- */
+function goHome() {
+  gameRunning = false;
+  clearInterval(timerInterval);
+  clearInterval(spawnInterval);
+  clearTimeout(messageTimeout);
 
-  if (window.Capacitor &&
-      window.Capacitor.Plugins &&
-      window.Capacitor.Plugins.App) {
-    window.Capacitor.Plugins.App.exitApp();
-  } else {
-    startGame();
-  }
+  roundId += 1;
+  playArea.replaceChildren();
+  playArea.style.display = "none";
+  hud.style.display = "none";
+  soundButton.style.display = "none";
+  endScreen.style.display = "none";
+  startScreen.style.display = "flex";
+
+  stopAudio(winSound);
+  stopAudio(loseSound);
+  playBackgroundMusic();
 }
 
-/* دکمه‌ها */
-$("start-btn").addEventListener("click", startGame);
-$("restart-btn").addEventListener("click", startGame);
-$("finish-btn").addEventListener("click", finishGame);
-
-/*
- * تلاش برای پخش موسیقی هنگام بارگذاری برنامه.
- * اگر مرورگر یا WebView پخش خودکار را مسدود کند،
- * با اولین لمس کاربر دوباره تلاش می‌کنیم.
- */
-window.addEventListener("load", () => {
-  createFlowers();
-  updateLives();
-  playStartMusic();
+/* ---------- رویداد دکمه‌ها ---------- */
+startButton.addEventListener("click", function () {
+  startGame();
 });
 
-/* سازگاری با محدودیت autoplay در Android و مرورگرها */
-function firstInteraction() {
-  unlockAudio();
+restartButton.addEventListener("click", function () {
+  stopAudio(winSound);
+  stopAudio(loseSound);
+  startGame();
+});
 
-  if (startScreen.classList.contains("active")) {
-    playStartMusic();
+homeButton.addEventListener("click", function () {
+  stopAudio(winSound);
+  stopAudio(loseSound);
+  goHome();
+});
+
+soundButton.addEventListener("click", function () {
+  soundEnabled = !soundEnabled;
+
+  if (soundEnabled) {
+    soundButton.textContent = "🔊 صدا روشن";
+    playBackgroundMusic();
+  } else {
+    soundButton.textContent = "🔇 صدا خاموش";
+    stopAudio(startMusic);
+    stopAudio(winSound);
+    stopAudio(loseSound);
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
   }
+});
 
-  document.removeEventListener("pointerdown", firstInteraction);
-  document.removeEventListener("touchstart", firstInteraction);
-  document.removeEventListener("keydown", firstInteraction);
-}
+/* ---------- راه‌اندازی اولیه ---------- */
+window.addEventListener("load", function () {
+  updateHud();
 
-document.addEventListener("pointerdown", firstInteraction);
-document.addEventListener("touchstart", firstInteraction, { passive: true });
-document.addEventListener("keydown", firstInteraction);
-
+  // تلاش برای پخش موسیقی هنگام بازشدن برنامه.
+  // اگر مرورگر اجازه ندهد، با اولین لمس کاربر دوباره تلاش می‌شود.
+  playBackgroundMusic();
+});
 </script>
 </body>
 </html>
